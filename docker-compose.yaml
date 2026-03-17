@@ -1,0 +1,10 @@
+services:
+   client:
+     build: ./client
+     container_name: frontend
+     restart: alwAys
+
+   server:
+     build: ./server
+     container_name: backend
+     restart: always   
