@@ -1,7 +1,7 @@
 # 📄 Product Requirements Document (PRD)
 
 ## 🧩 Product Name  
-**SyncSpace**
+**CUBE COLLAB**
 
 ---
 

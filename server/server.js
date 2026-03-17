@@ -1,10 +1,13 @@
 import "dotenv/config";
 import express from "express";
-import cookiparser from "cookie-parser"
+import cookieParser from "cookie-parser"
 import cors from "cors"
 
-const app=express()
 const port=process.env.PORT || 5000
+
+const app=express()
+app.use(cookieParser())
+app.use(cors())
 
 
 app.get("/",(req,res)=>{
