@@ -1,7 +1,11 @@
-import "dotenv/config";
+import dotenv from "dotenv"
+dotenv.config()
 import express from "express";
 import cookieParser from "cookie-parser"
 import cors from "cors"
+
+
+import connectDb from "./config/mongodb.js";
 
 const port=process.env.PORT || 5000
 
@@ -12,10 +16,9 @@ app.use(cors())
 
 app.get("/",(req,res)=>{
     res.send("Realtime Collaboration System \"CUBE COLLAB\"");
-
 })
 
-
+connectDb()
 app.listen(port,()=>{
     console.log(`sever running at http://localhost:${port}`);
 })
