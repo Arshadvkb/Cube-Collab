@@ -14,10 +14,18 @@ const userSchema = mongoose.schema(
       type: String,
       required: true,
     },
-    avatar:{
+    avatar: {
       type: String,
-      required:true
-    }
+      required: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
+
+const userModel=mongoose.models.User || mongoose.model('User',userSchema);
+
+export default userModel
