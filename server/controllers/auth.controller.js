@@ -91,7 +91,35 @@ const logout = async (req, res) => {
     }
 }
 
+const sendVerificationEmail = async (req, res) => {
+    const { email } = req.body;
+    try {
+        console.log(email);
+
+
+    } catch (error) {
+        console.log("error in sendVerificationEmail :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in sendVerificationEmail", error: error.message })
+    }
+}
+
+
+const verifyEmail = async (req, res) => {
+    const { email } = req.body;
+    const { id } = req.params;
+    try {
+        console.log(email);
+        console.log(id);
+
+
+    } catch (error) {
+        console.log("error in verifyEmail :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in verifyEmail", error: error.message })
+
+    }
+
+}
 
 
 
-export { signup, login, logout }
+export { signup, login, logout, verifyEmail, sendVerificationEmail }
