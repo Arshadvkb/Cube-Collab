@@ -53,4 +53,29 @@ const signup=async(req,res)=>{
 }
 
 
-export default signup
+const login=async(req,res)=>{
+    console.log(req.body);
+    try {
+        const {email,password}=req.body
+        if(!email || !password){
+            return res.status(404).json({success:false,msg:"all fields are rquired"})
+         }
+         const user=await userModel.findOne({email})
+         if(!user){
+            return res.status(404).json({success:false,msg:"user not found"})
+         }
+         const isPasswordValid=await bcrypt.compare(password,user.password)
+         if(!isPasswordValid){
+            return res.status(404).json({success:false,msg:"invalid password"})
+         }
+         await genrateToken(user._id,res)
+         return res.status(200).json({success:true,msg:"login successfuly"})
+    } catch (error) {
+        console.log("error in login :"+error.message);
+        return res.status(500).json({success:false,msg:"error in login",error:error.message})
+        
+    }
+}
+
+
+export {signup,login}
