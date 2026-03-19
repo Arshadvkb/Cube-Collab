@@ -113,7 +113,7 @@ const sendVerificationEmail = async (req, res) => {
     }
 }
 
-//! need to complete this function
+
 const verifyEmail = async (req, res) => {
     const { otp, email } = req.body;
 
