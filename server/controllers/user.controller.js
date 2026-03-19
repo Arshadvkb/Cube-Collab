@@ -15,6 +15,32 @@ const getProfile = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    const { id } = req.params;
+    const { name, email, password } = req.body;
+    try {
 
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, msg: "user not found" });
+        }
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (password) user.password = password;
+        if (req.file) {
+            const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: "auto",
+                folder: "cube_collab",
+            });
+            user.avatar = uploadResult.secure_url;
+        }
+        await user.save();
+        return res.status(200).json({ success: true, msg: "user profile updated successfully", user });
 
-export { getProfile }
+    } catch (error) {
+        console.log("error in updateProfile :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in updateProfile", error: error.message });
+    }
+}
+
+export { getProfile, updateProfile }
