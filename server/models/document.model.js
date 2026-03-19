@@ -1,4 +1,4 @@
- import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const documentSchema = new mongoose.Schema(
   {
@@ -10,7 +10,9 @@ const documentSchema = new mongoose.Schema(
 
     content: {
       type: mongoose.Schema.Types.Mixed,
-      required: true,
+      default: {
+        ops: [{ insert: "\n" }]
+      }
     },
 
     owner: {
@@ -47,6 +49,8 @@ const documentSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+documentSchema.index({ "collaborators.userId": 1 });
 
 const documentModel = mongoose.models.Document || mongoose.model("Document", documentSchema);
 
