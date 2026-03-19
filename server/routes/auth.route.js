@@ -114,13 +114,15 @@ authRouter.post("/send-verification-email/:id", sendVerificationEmail);
  *           schema:
  *             type: object
  *             properties:
- *               token:
+ *               email:
  *                 type: string
+ *               otp:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Email verified successfully
  *       400:
- *         description: Invalid or expired token
+ *         description: Invalid or expired token/OTP
  */
 authRouter.post("/verify-email", verifyEmail);
 

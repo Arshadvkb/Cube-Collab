@@ -115,11 +115,20 @@ const sendVerificationEmail = async (req, res) => {
 
 //! need to complete this function
 const verifyEmail = async (req, res) => {
-    const { email } = req.body;
-    const { id } = req.params;
+    const { otp, email } = req.body;
+
     try {
-        console.log(email);
-        console.log(id);
+        const user = await userModel.findOne({ email })
+        if (!user) {
+            return res.status(404).json({ success: false, msg: "user not found" })
+        }
+        if (user.emailverificationotp !== otp) {
+            return res.status(404).json({ success: false, msg: "invalid otp" })
+        }
+        user.emailverificationotp = null
+        user.isVerified = true
+        await user.save()
+        return res.status(200).json({ success: true, msg: "email verified successfully" })
 
 
     } catch (error) {
