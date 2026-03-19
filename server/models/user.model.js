@@ -22,10 +22,17 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    emailverificationotp: {
+      type: Number
+
+    },
+    resetpasswordotp: {
+      type: Number
+    }
   },
   { timestamps: true },
 );
 
-const userModel=mongoose.models.User || mongoose.model('User',userSchema);
+const userModel = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default userModel

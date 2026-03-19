@@ -2,6 +2,7 @@ import bcrypt from "bcrypt"
 import userModel from "../models/user.model.js"
 import { genrateToken } from "../utils/tokens.js"
 import cloudinary from "../config/cloudinary.js";
+import sendMail from "../utils/sendMail.js";
 
 const signup = async (req, res) => {
     console.log(req.body);
@@ -91,11 +92,20 @@ const logout = async (req, res) => {
     }
 }
 
-const sendVerificationEmail = async (req, res) => {
-    const { email } = req.body;
-    try {
-        console.log(email);
 
+const sendVerificationEmail = async (req, res) => {
+    const { id } = req.params
+    try {
+        const user = await userModel.findById(id)
+        if (!user) {
+            return res.status(404).json({ success: false, msg: "user not found" })
+        }
+        const email = user.email
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        await sendMail(email, "Verification Email", `OTP for verification is : ${otp}`);
+        user.emailverificationotp = otp
+        await user.save()
+        return res.status(200).json({ success: true, msg: "Verification email sent successfully" })
 
     } catch (error) {
         console.log("error in sendVerificationEmail :" + error.message);
@@ -103,7 +113,7 @@ const sendVerificationEmail = async (req, res) => {
     }
 }
 
-
+//! need to complete this function
 const verifyEmail = async (req, res) => {
     const { email } = req.body;
     const { id } = req.params;

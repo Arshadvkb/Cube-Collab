@@ -9,7 +9,7 @@ const authRouter = express.Router()
  * @swagger
  * tags:
  *   name: Auth
- *   description: Authentication API
+ *   description: Authentication API 
  */
 
 /**
