@@ -1,14 +1,17 @@
-import { userModel } from "../models/user.model.js";
+import userModel from "../models/user.model.js";
 
 
 const authenticateuser = async (req, res, next) => {
     try {
-        if (!req.ssession || !req.session.userId) {
-            return res.status(401).json({ message: "Unauthorized" });
+        console.log("Session id: " + req.sessionID);
+        console.log("user id: " + req.session?.userID);
+
+        if (!req.session || !req.session.userID) {
+            return res.status(401).json({ msg: "Unauthorized :No user in seesion" });
         }
-        const user = await userModel.findById(req.session.userId);
+        const user = await userModel.findById(req.session.userID);
         if (!user) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ msg: "Unauthorized :No user found with id" });
         }
         req.user = user;
         next();

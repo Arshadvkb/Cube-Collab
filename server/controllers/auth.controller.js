@@ -70,6 +70,7 @@ const login = async (req, res) => {
             return res.status(404).json({ success: false, msg: "invalid password" })
         }
         await genrateToken(user._id, res)
+        req.session.userID = user._id;
         return res.status(200).json({ success: true, msg: "login successfuly" })
     } catch (error) {
         console.log("error in login :" + error.message);

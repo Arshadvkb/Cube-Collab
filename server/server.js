@@ -4,12 +4,13 @@ import express from "express";
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import swaggerUi from "swagger-ui-express";
+import session from "express-session"
+
 import swaggerSpec from "./utils/swagger.js";
-
-
 import connectDb from "./config/mongodb.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import documentRouter from "./routes/document.route.js";
 
 const port = process.env.PORT || 5000
 
@@ -19,13 +20,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: "http://localhost:5173",
+    origin: "http://localhost:3000",
     credentials: true
 }))
+app.use(session({
+    secret: 'your_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true only for HTTPS
+}));
 
 
 
 //app routes 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
     res.send("Realtime Collaboration System \"CUBE COLLAB\"");
@@ -34,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
+app.use("/api/document", documentRouter)
 
 connectDb()
 app.listen(port, () => {
