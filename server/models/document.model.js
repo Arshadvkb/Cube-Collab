@@ -26,22 +26,6 @@ const documentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
-    collaborators: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-
-        role: {
-          type: String,
-          enum: ["viewer", "editor"],
-          default: "editor",
-        },
-      },
-    ],
-
     lastEditedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -50,7 +34,7 @@ const documentSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-documentSchema.index({ "collaborators.userId": 1 });
+
 
 const documentModel = mongoose.models.Document || mongoose.model("Document", documentSchema);
 
