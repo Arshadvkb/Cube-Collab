@@ -3,6 +3,7 @@ import userModel from "../models/user.model.js"
 import { genrateToken } from "../utils/tokens.js"
 import cloudinary from "../config/cloudinary.js";
 import sendMail from "../utils/sendMail.js";
+import jwt from "jsonwebtoken"
 
 const signup = async (req, res) => {
     console.log(req.body);
@@ -148,17 +149,41 @@ const sendResetPasswordOtp = async (req, res) => {
         if (!user) return res.status(404).json({ success: false, msg: "No user found with this email" })
         user.resetpasswordotp = otp
         await user.save()
-        await sendMail(email, "`Reset Password", `OTP for reseting password:${otp}`)
+        await sendMail(email, "Reset Password", `OTP for reseting password:${otp}`)
         return res.status(200).json({ success: true, msg: "Verification email sent successfully" })
 
     } catch (error) {
-        console.log("error in verifyEmail :" + error.message);
-        return res.status(500).json({ success: false, msg: "error in verifyEmail", error: error.message })
+        console.log("error in send reset password otp :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in send reset password otp", error: error.message })
     }
+}
 
+const matchOtp = async (req, res) => {
+    const { otp, email } = req.body
+
+    try {
+        const user = await userModel.findOne({ email })
+
+        if (!user) return res.status(404).json({ success: false, msg: "No user found" })
+
+        if (user.resetpasswordotp != otp) return res.status(400).json({ success: false, msg: "Invalid OTP" })
+
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRETE,
+            { expiresIn: "10m" }
+        );
+        user.resetpasswordotp = null
+        user.save()
+        return res.status(200).json({ success: true, msg: "otp verified successfuly" })
+
+    } catch (error) {
+        console.log("error in send reset password otp :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in send reset password otp", error: error.message })
+    }
 }
 
 
 
 
-export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp }
+export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp }
