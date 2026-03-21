@@ -18,7 +18,7 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     const { id } = req.params;
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
     try {
 
         const user = await userModel.findById(id);
@@ -28,12 +28,7 @@ const updateProfile = async (req, res) => {
 
         if (name) user.name = name;
         if (email) user.email = email;
-        if (password) {
-            const salt = bcrypt.genSalt(10)
-            const hashed = bcrypt.hash(password, salt)
-            user.password = hashed
 
-        };
         if (req.file) {
             const uploadResult = await cloudinary.uploader.upload(req.file.path, {
                 resource_type: "auto",
