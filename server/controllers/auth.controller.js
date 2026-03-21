@@ -126,7 +126,7 @@ const verifyEmail = async (req, res) => {
         if (user.emailverificationotp !== otp) {
             return res.status(404).json({ success: false, msg: "invalid otp" })
         }
-        user.emailverificationotp = null
+        user.emailverificationotp = ""
         user.isVerified = true
         await user.save()
         return res.status(200).json({ success: true, msg: "email verified successfully" })
@@ -140,6 +140,25 @@ const verifyEmail = async (req, res) => {
 
 }
 
+const sendResetPasswordOtp = async (req, res) => {
+    const { email } = req.body
+    try {
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        const user = await userModel.findOne({ email })
+        if (!user) return res.status(404).json({ success: false, msg: "No user found with this email" })
+        user.resetpasswordotp = otp
+        await user.save()
+        await sendMail(email, "`Reset Password", `OTP for reseting password:${otp}`)
+        return res.status(200).json({ success: true, msg: "Verification email sent successfully" })
+
+    } catch (error) {
+        console.log("error in verifyEmail :" + error.message);
+        return res.status(500).json({ success: false, msg: "error in verifyEmail", error: error.message })
+    }
+
+}
 
 
-export { signup, login, logout, verifyEmail, sendVerificationEmail }
+
+
+export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp }

@@ -1,6 +1,6 @@
 import express from "express"
 
-import { signup, login, logout, verifyEmail, sendVerificationEmail } from "../controllers/auth.controller.js"
+import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp } from "../controllers/auth.controller.js"
 import { upload } from "../middleware/multer.js";
 
 const authRouter = express.Router()
@@ -125,5 +125,33 @@ authRouter.post("/send-verification-email/:id", sendVerificationEmail);
  *         description: Invalid or expired token/OTP
  */
 authRouter.post("/verify-email", verifyEmail);
+
+
+
+/**
+ * @swagger
+ * /api/auth/send-reset-password-otp:
+ *   post:
+ *     summary: Send OTP for resetting password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Verification email sent successfully
+ *       404:
+ *         description: No user found with this email
+ *       500:
+ *         description: Server error
+ */
+authRouter.post("/send-reset-password-otp", sendResetPasswordOtp)
+
 
 export default authRouter
