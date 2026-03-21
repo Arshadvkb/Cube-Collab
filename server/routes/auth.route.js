@@ -1,6 +1,6 @@
 import express from "express"
 
-import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp } from "../controllers/auth.controller.js"
+import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword } from "../controllers/auth.controller.js"
 import { upload } from "../middleware/multer.js";
 
 const authRouter = express.Router()
@@ -182,6 +182,34 @@ authRouter.post("/send-reset-password-otp", sendResetPasswordOtp)
  *         description: Server error
  */
 authRouter.post("/verify-password-reset-otp", matchOtp)
+
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset user password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *       400:
+ *         description: Invalid or expired token
+ *       500:
+ *         description: Server error
+ */
+authRouter.post("/reset-password", resetPassword)
 
 
 export default authRouter

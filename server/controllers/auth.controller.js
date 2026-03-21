@@ -183,7 +183,33 @@ const matchOtp = async (req, res) => {
     }
 }
 
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await userModel.findById(decoded.userId);
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetpasswordotp = null;
+
+        await user.save();
+
+        return res.json({
+            success: true,
+            msg: "Password reset successful"
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            msg: "Invalid or expired token"
+        });
+    }
+}
 
 
 
-export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp }
+
+export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword }
