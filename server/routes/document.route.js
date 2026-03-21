@@ -1,6 +1,6 @@
 import express from "express"
 import authenticateuser from "../middleware/authenticate_user.js"
-import addDocument from "../controllers/document.controller.js"
+import { addDocument, viewDoc } from "../controllers/document.controller.js"
 
 const documentRouter = express.Router()
 
@@ -42,6 +42,20 @@ const documentRouter = express.Router()
  *         description: Internal server error
  */
 documentRouter.post("/add", authenticateuser, addDocument)
+
+/**
+ * @swagger
+ * /api/document/view:
+ *   get:
+ *     summary: View documents
+ *     tags: [Document]
+ *     responses:
+ *       200:
+ *         description: Document(s) retrieved successfully
+ *       500:
+ *         description: Internal server error
+ */
+documentRouter.get("/view", authenticateuser, viewDoc)
 
 
 export default documentRouter

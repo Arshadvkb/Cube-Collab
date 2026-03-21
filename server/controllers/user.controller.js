@@ -1,4 +1,5 @@
 import userModel from "../models/user.model.js";
+import bcrypt from "bcrypt"
 
 const getProfile = async (req, res) => {
     try {
@@ -24,9 +25,15 @@ const updateProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, msg: "user not found" });
         }
+
         if (name) user.name = name;
         if (email) user.email = email;
-        if (password) user.password = password;
+        if (password) {
+            const salt = bcrypt.genSalt(10)
+            const hashed = bcrypt.hash(password, salt)
+            user.password = hashed
+
+        };
         if (req.file) {
             const uploadResult = await cloudinary.uploader.upload(req.file.path, {
                 resource_type: "auto",
