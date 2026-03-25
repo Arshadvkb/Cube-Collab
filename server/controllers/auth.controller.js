@@ -25,11 +25,14 @@ const signup = async (req, res) => {
             return res.status(400).json({ msg: "user with this email already exists", success: false })
         }
 
-        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-            resource_type: "auto",
-            folder: "cube_collab",
-        });
-        const imageUrl = uploadResult.secure_url
+        let imageUrl = "";
+        if (req.file) {
+            const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: "auto",
+                folder: "cube_collab",
+            });
+            imageUrl = uploadResult.secure_url;
+        }
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -42,9 +45,9 @@ const signup = async (req, res) => {
         })
 
         await newUser.save()
-        await genrateToken(newUser._id, res)
+        const token = await genrateToken(newUser._id, res)
 
-        return res.status(200).json({ success: true, msg: "Registerd successfuly" })
+        return res.status(200).json({ success: true, msg: "Registerd successfuly", user: newUser, token })
 
 
 
@@ -70,9 +73,9 @@ const login = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(404).json({ success: false, msg: "invalid password" })
         }
-        await genrateToken(user._id, res)
+        const token = await genrateToken(user._id, res)
         req.session.userID = user._id;
-        return res.status(200).json({ success: true, msg: "login successfuly" })
+        return res.status(200).json({ success: true, msg: "login successfuly", user, token })
     } catch (error) {
         console.log("error in login :" + error.message);
         return res.status(500).json({ success: false, msg: "error in login", error: error.message })
@@ -210,6 +213,22 @@ const resetPassword = async (req, res) => {
 }
 
 
+const checkAuth = async (req, res) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ msg: "Not authenticated" });
 
+        const decoded = jwt.verify(token, process.env.JWT_SECRETE);
 
-export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword }
+        const user = await userModel.findById(decoded.id).select("-password");
+
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        return res.status(200).json({ user });
+
+    } catch (error) {
+        return res.status(401).json({ msg: "Invalid token" });
+    }
+}
+
+export { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword, checkAuth }

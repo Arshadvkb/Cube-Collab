@@ -1,5 +1,5 @@
 import { create } from "zustand";
 
-const AuthStore=create((set)=>{
-    
+const AuthStore = create((set) => {
+
 })
