@@ -141,6 +141,32 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  // Action to update user profile
+  updateProfile: async (id, formData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/user/update-profile/${id}`, formData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      
+      set((state) => ({
+        user: { ...state.user, ...response.data.user },
+        isLoading: false
+      }));
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to update profile',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
   // Action to check current auth status (e.g., on app load)
   checkAuth: async () => {
     const token = localStorage.getItem('token');

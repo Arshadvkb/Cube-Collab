@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
+import cloudinary from "../config/cloudinary.js";
 
 const getProfile = async (req, res) => {
     try {

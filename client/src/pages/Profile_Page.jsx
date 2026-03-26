@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import Sidebar from '../components/Sidebar';
-import { User, Mail, Calendar, Settings, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { User, Mail, Calendar, Settings, CheckCircle, AlertCircle, X, Edit2, Save, Camera } from 'lucide-react';
 
 const Profile_Page = () => {
-  const { user, isAuthenticated, isLoading, checkAuth, sendVerificationEmail, verifyEmail } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth, sendVerificationEmail, verifyEmail, updateProfile } = useAuthStore();
   const navigate = useNavigate();
   
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [otpMessage, setOtpMessage] = useState('');
+
+  // Edit Profile State
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', email: '' });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [updateError, setUpdateError] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     checkAuth();
@@ -53,6 +61,46 @@ const Profile_Page = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditForm({ name: user?.name || '', email: user?.email || '' });
+    setPreviewImage(user?.profileImage || user?.profilePic || user?.avatar || null);
+    setSelectedImage(null);
+    setUpdateError('');
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setSelectedImage(null);
+    setPreviewImage(null);
+    setUpdateError('');
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setUpdateError('');
+      const formData = new FormData();
+      formData.append('name', editForm.name);
+      formData.append('email', editForm.email);
+      if (selectedImage) {
+        formData.append('avatar', selectedImage);
+      }
+      
+      await updateProfile(user._id, formData);
+      setIsEditing(false);
+    } catch (error) {
+      setUpdateError(useAuthStore.getState().error || 'Failed to update profile');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -76,24 +124,57 @@ const Profile_Page = () => {
             <div className="h-32 bg-linear-to-r from-blue-600 to-indigo-700"></div>
             
             <div className="px-8 pb-8 relative">
-              <div className="absolute -top-12 left-8 border-4 border-white h-24 w-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-md overflow-hidden shrink-0">
-                {user?.profileImage || user?.profilePic || user?.avatar ? (
-                  <img src={user.profileImage || user.profilePic || user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              <div className="absolute -top-12 left-8 border-4 border-white h-24 w-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-md overflow-hidden shrink-0 group">
+                {isEditing ? (
+                  <>
+                    <img 
+                      src={previewImage || user?.profileImage || user?.profilePic || user?.avatar || `https://ui-avatars.com/api/?name=${user?.name || 'U'}`} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover" 
+                    />
+                    <div 
+                      className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Camera className="w-8 h-8 text-white" />
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={handleImageChange} 
+                    />
+                  </>
                 ) : (
-                  user?.name?.charAt(0)?.toUpperCase() || 'U'
+                  user?.profileImage || user?.profilePic || user?.avatar ? (
+                    <img src={user.profileImage || user.profilePic || user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    user?.name?.charAt(0)?.toUpperCase() || 'U'
+                  )
                 )}
               </div>
               
               <div className="pt-16 sm:pt-14 pb-6 border-b border-gray-100">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User Name'}</h2>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                        className="text-2xl font-bold text-gray-900 border-b border-gray-300 focus:border-blue-600 outline-none bg-transparent px-1 py-0.5 w-full sm:w-auto"
+                        placeholder="Your Name"
+                      />
+                    ) : (
+                      <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User Name'}</h2>
+                    )}
                     <p className="text-gray-500 flex items-center gap-2 mt-1">
                       <Mail className="w-4 h-4" />
                       {user?.email || 'user@example.com'}
                     </p>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-3">
                     {user?.isVerified ? (
                       <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                         <CheckCircle className="w-4 h-4" />
@@ -103,13 +184,47 @@ const Profile_Page = () => {
                       <button
                         onClick={handleSendVerification}
                         className="inline-flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-linear-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800 transition-colors shadow-sm cursor-pointer"
+                        disabled={isEditing}
                       >
                         <AlertCircle className="w-4 h-4" />
                         Verify Email
                       </button>
                     )}
+                    
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleCancelEdit}
+                          className="p-2 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                          title="Cancel"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={handleSaveProfile}
+                          disabled={isLoading}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm disabled:opacity-70 cursor-pointer"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span className="text-sm font-medium">Save</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleEditClick}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors shadow-sm cursor-pointer"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        <span className="text-sm font-medium">Edit Profile</span>
+                      </button>
+                    )}
                   </div>
                 </div>
+                {updateError && (
+                  <p className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 w-full">
+                    {updateError}
+                  </p>
+                )}
               </div>
 
               <div className="py-6 space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
@@ -121,11 +236,29 @@ const Profile_Page = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Full Name</label>
-                      <p className="mt-1 text-gray-900 font-medium">{user?.name}</p>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 font-medium"
+                        />
+                      ) : (
+                        <p className="mt-1 text-gray-900 font-medium">{user?.name}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Email Address</label>
-                      <p className="mt-1 text-gray-900 font-medium">{user?.email}</p>
+                      {isEditing ? (
+                        <input
+                          type="email"
+                          value={editForm.email}
+                          onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 font-medium"
+                        />
+                      ) : (
+                        <p className="mt-1 text-gray-900 font-medium">{user?.email}</p>
+                      )}
                     </div>
                   </div>
                 </div>

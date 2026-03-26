@@ -4,11 +4,7 @@ import documentModel from "../models/document.model.js";
 const addDocument = async (req, res) => {
     try {
         const { title, content, isPublic } = req.body
-        // Removed email verification block temporarily since frontend has no verification UI
-        // if (!req.user.isVerified) {
-        //     return res.status(400).json({ success: false, msg: "User have not verified email" })
-        // }
-
+       
         const newDoc = new documentModel({
             title,
             content,
