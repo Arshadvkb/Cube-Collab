@@ -4,10 +4,7 @@ import documentModel from "../models/document.model.js";
 const addDocument = async (req, res) => {
     try {
         const { title, content, isPublic } = req.body
-        if (!req.user.isVerified) {
-            return res.status(400).json({ success: false, msg: "User have not verified email" })
-        }
-
+       
         const newDoc = new documentModel({
             title,
             content,
@@ -16,9 +13,9 @@ const addDocument = async (req, res) => {
             lastEditedBy: req.user._id
 
         })
-        newDoc.save()
+        await newDoc.save()
         console.log("New doc added");
-        return res.status(200).json({ success: true, msg: "new Doc added successfuly" })
+        return res.status(200).json({ success: true, msg: "new Doc added successfuly", document: newDoc })
 
     } catch (error) {
         console.log("error in adding document :" + error.message);

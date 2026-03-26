@@ -1,6 +1,6 @@
 import express from "express"
 
-import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword } from "../controllers/auth.controller.js"
+import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword, checkAuth } from "../controllers/auth.controller.js"
 import { upload } from "../middleware/multer.js";
 
 const authRouter = express.Router()
@@ -211,5 +211,6 @@ authRouter.post("/verify-password-reset-otp", matchOtp)
  */
 authRouter.post("/reset-password", resetPassword)
 
+authRouter.get("/me", checkAuth);
 
 export default authRouter
