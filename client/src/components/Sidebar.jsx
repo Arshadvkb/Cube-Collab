@@ -1,13 +1,21 @@
 import React from 'react';
-import { Home, Settings, Users, LogOut } from 'lucide-react';
+import { Home, Settings, Users, LogOut, User } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 // Sidebar component is reusable and strictly handles its own isolated UI and basic logic
 const Sidebar = () => {
   const { logout, user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const navItems = [
     { label: 'Dashboard', icon: Home, route: '/dashboard' },
+    { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Team', icon: Users, route: '/team' },
     { label: 'Settings', icon: Settings, route: '/settings' },
   ];
@@ -52,7 +60,7 @@ const Sidebar = () => {
         </div>
         
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-950/30 transition-colors"
         >
           <LogOut className="w-5 h-5" />

@@ -1,22 +1,40 @@
 import userModel from "../models/user.model.js";
-
+import jwt from "jsonwebtoken";
 
 const authenticateuser = async (req, res, next) => {
     try {
-        console.log("Session id: " + req.sessionID);
-        console.log("user id: " + req.session?.userID);
+        let authUserId = null;
 
-        if (!req.session || !req.session.userID) {
-            return res.status(401).json({ msg: "Unauthorized :No user in seesion" });
+        // Check if session exists
+        if (req.session && req.session.userID) {
+            authUserId = req.session.userID;
+        } 
+        // Fallback to JWT Bearer token from headers
+        else {
+            const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+            if (token) {
+                try {
+                    const decoded = jwt.verify(token, process.env.JWT_SECRETE);
+                    authUserId = decoded.id; // token was created with { id: user._id }
+                } catch (err) {
+                    console.log("JWT Verification Error: ", err);
+                }
+            }
         }
-        const user = await userModel.findById(req.session.userID);
+
+        if (!authUserId) {
+            return res.status(401).json({ msg: "Unauthorized: No valid session or token found" });
+        }
+
+        const user = await userModel.findById(authUserId);
         if (!user) {
-            return res.status(401).json({ msg: "Unauthorized :No user found with id" });
+            return res.status(401).json({ msg: "Unauthorized: No user found with id" });
         }
+
         req.user = user;
         next();
     } catch (error) {
-        console.log(error);
+        console.log("Error in authenticateuser:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }

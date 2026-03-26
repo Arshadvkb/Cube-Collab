@@ -166,7 +166,7 @@ const Register_Page = () => {
 
         <div className="mt-8 text-center text-sm text-gray-400">
           Already have an account?{' '}
-          <Link to="/" className="text-blue-400 font-medium hover:text-blue-300 transition-colors">
+          <Link to="/login" className="text-blue-400 font-medium hover:text-blue-300 transition-colors">
             Sign In
           </Link>
         </div>
