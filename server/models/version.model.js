@@ -10,7 +10,7 @@ const versionSchema = new mongoose.Schema(
     },
 
     content: {
-      type: mongoose.Schema.Types.Mixed, // same as document
+      type: mongoose.Schema.Types.Mixed,
       required: true,
     },
 

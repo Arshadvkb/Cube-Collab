@@ -1,5 +1,6 @@
 import collaborationModel from "../models/collaboration.model.js";
 import documentModel from "../models/document.model.js";
+import versionModel from "../models/version.model.js";
 
 const addDocument = async (req, res) => {
     try {
@@ -13,7 +14,14 @@ const addDocument = async (req, res) => {
             lastEditedBy: req.user._id
 
         })
+       
         await newDoc.save()
+        const version = new versionModel({
+            documentId:newDoc._id,
+            content,
+            editedBy: req.user._id
+        })
+        await version.save()
         console.log("New doc added");
         return res.status(200).json({ success: true, msg: "new Doc added successfuly", document: newDoc })
 
