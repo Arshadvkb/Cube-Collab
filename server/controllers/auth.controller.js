@@ -107,7 +107,27 @@ const sendVerificationEmail = async (req, res) => {
         }
         const email = user.email
         const otp = Math.floor(100000 + Math.random() * 900000);
-        await sendMail(email, "Verification Email", `OTP for verification is : ${otp}`);
+
+        const htmlTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #333;">Welcome to Cube Collab!</h2>
+                </div>
+                <div style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+                    <p style="font-size: 16px; color: #555;">Hello,</p>
+                    <p style="font-size: 16px; color: #555;">Please confirm your email address to complete your registration. Your One-Time Password (OTP) for verification is:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 5px; padding: 10px 20px; background-color: #e6f2ff; border-radius: 5px;">${otp}</span>
+                    </div>
+                    <p style="font-size: 14px; color: #888; text-align: center;">This OTP is valid for a limited time. Please do not share it with anyone.</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #aaa;">
+                    <p>&copy; ${new Date().getFullYear()} Cube Collab. All rights reserved.</p>
+                </div>
+            </div>
+        `;
+
+        await sendMail(email, "Verification Email", `OTP for verification is : ${otp}`, htmlTemplate);
         user.emailverificationotp = otp
         await user.save()
         return res.status(200).json({ success: true, msg: "Verification email sent successfully" })
@@ -152,7 +172,27 @@ const sendResetPasswordOtp = async (req, res) => {
         if (!user) return res.status(404).json({ success: false, msg: "No user found with this email" })
         user.resetpasswordotp = otp
         await user.save()
-        await sendMail(email, "Reset Password", `OTP for reseting password:${otp}`)
+
+        const htmlTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #333;">Cube Collab Password Reset</h2>
+                </div>
+                <div style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+                    <p style="font-size: 16px; color: #555;">Hello,</p>
+                    <p style="font-size: 16px; color: #555;">We received a request to reset your password. Here is your One-Time Password (OTP):</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <span style="font-size: 32px; font-weight: bold; color: #e74c3c; letter-spacing: 5px; padding: 10px 20px; background-color: #fcebeb; border-radius: 5px;">${otp}</span>
+                    </div>
+                    <p style="font-size: 14px; color: #888; text-align: center;">If you didn't request a password reset, you can safely ignore this email.</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #aaa;">
+                    <p>&copy; ${new Date().getFullYear()} Cube Collab. All rights reserved.</p>
+                </div>
+            </div>
+        `;
+
+        await sendMail(email, "Reset Password", `OTP for reseting password:${otp}`, htmlTemplate);
         return res.status(200).json({ success: true, msg: "Verification email sent successfully" })
 
     } catch (error) {
@@ -177,8 +217,8 @@ const matchOtp = async (req, res) => {
             { expiresIn: "10m" }
         );
         user.resetpasswordotp = null
-        user.save()
-        return res.status(200).json({ success: true, msg: "otp verified successfuly" })
+        await user.save()
+        return res.status(200).json({ success: true, msg: "otp verified successfuly", token })
 
     } catch (error) {
         console.log("error in send reset password otp :" + error.message);
@@ -190,7 +230,7 @@ const resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRETE);
 
         const user = await userModel.findById(decoded.userId);
 

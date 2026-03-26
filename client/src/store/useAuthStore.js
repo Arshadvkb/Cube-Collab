@@ -64,6 +64,83 @@ export const useAuthStore = create((set) => ({
     });
   },
 
+  // Actions for email verification flow
+  sendVerificationEmail: async (userId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/auth/send-verification-email/${userId}`);
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to send verification email',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  verifyEmail: async (email, otp) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/auth/verify-email`, { email, otp });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Invalid OTP',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  // Actions for forgot password flow
+  sendResetOtp: async (email) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/auth/send-reset-password-otp`, { email });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to send OTP',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  verifyResetOtp: async (email, otp) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/auth/verify-password-reset-otp`, { email, otp });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Invalid OTP',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  resetPassword: async (token, newPassword) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, { token, newPassword });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to reset password',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
   // Action to check current auth status (e.g., on app load)
   checkAuth: async () => {
     const token = localStorage.getItem('token');

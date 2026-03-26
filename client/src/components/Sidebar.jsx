@@ -1,7 +1,7 @@
 import React from 'react';
 import { Home, Settings, Users, LogOut, User } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // Sidebar component is reusable and strictly handles its own isolated UI and basic logic
 const Sidebar = () => {
@@ -35,14 +35,14 @@ const Sidebar = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
-              <a
+              <Link
                 key={item.label}
-                href={item.route}
+                to={item.route}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group cursor-pointer"
               >
                 <Icon className="w-5 h-5 group-hover:text-blue-400 transition-colors" />
                 <span className="font-medium">{item.label}</span>
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -51,8 +51,12 @@ const Sidebar = () => {
       {/* User Profile / Logout Section */}
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
-          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-sm font-bold">
-            {user?.name?.charAt(0) || 'U'}
+          <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden">
+            {user?.profileImage || user?.profilePic || user?.avatar ? (
+              <img src={user.profileImage || user.profilePic || user.avatar} alt="User" className="w-full h-full object-cover" />
+            ) : (
+              user?.name?.charAt(0)?.toUpperCase() || 'U'
+            )}
           </div>
           <div className="flex-1 overflow-hidden">
             <p className="text-sm font-medium truncate">{user?.name || 'Guest User'}</p>

@@ -69,7 +69,7 @@ const Login_Page = () => {
           <div>
             <label className="flex text-sm font-medium text-gray-300 mb-1.5 ml-1 justify-between">
               Password
-              <a href="#" className="text-blue-400 hover:text-blue-300 font-normal transition-colors">Forgot?</a>
+              <Link to="/forgot-password" className="text-blue-400 hover:text-blue-300 font-normal transition-colors">Forgot?</Link>
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-400 transition-colors">

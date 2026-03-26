@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Profile_Page from './pages/Profile_Page'
 import Document_Editor from './pages/Document_Editor'
 import Document_View from './pages/Document_View'
+import ForgotPassword from './pages/ForgotPassword'
 
 export const App = () => {
   return (
@@ -20,6 +21,7 @@ export const App = () => {
       <Route element={<Document_Editor/>} path='/document/new'/>
       <Route element={<Document_Editor/>} path='/document/edit/:id'/>
       <Route element={<Document_View/>} path='/document/view/:id'/>
+      <Route element={<ForgotPassword/>} path='/forgot-password'/>
      </Routes>
 
     </div>

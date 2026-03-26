@@ -1,12 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import Sidebar from '../components/Sidebar';
-import { User, Mail, Calendar, Settings } from 'lucide-react';
+import { User, Mail, Calendar, Settings, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 const Profile_Page = () => {
-  const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth, sendVerificationEmail, verifyEmail } = useAuthStore();
   const navigate = useNavigate();
+  
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
 
   useEffect(() => {
     checkAuth();
@@ -14,9 +19,39 @@ const Profile_Page = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate('/login');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+      }
     }
   }, [isAuthenticated, isLoading, navigate]);
+
+  const handleSendVerification = async () => {
+    try {
+      setOtpError('');
+      setOtpMessage('Sending verification email...');
+      await sendVerificationEmail(user._id);
+      setOtpMessage('Verification email sent. Please check your inbox.');
+      setShowOtpModal(true);
+    } catch (error) {
+       setOtpError(useAuthStore.getState().error || 'Failed to send verification email');
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      setOtpError('');
+      setOtpMessage('Verifying...');
+      await verifyEmail(user.email, parseInt(otp));
+      setShowOtpModal(false);
+      setOtp('');
+      checkAuth(); // refresh user data
+    } catch (error) {
+      setOtpError(useAuthStore.getState().error || 'Invalid OTP');
+      setOtpMessage('');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -41,16 +76,40 @@ const Profile_Page = () => {
             <div className="h-32 bg-linear-to-r from-blue-600 to-indigo-700"></div>
             
             <div className="px-8 pb-8 relative">
-              <div className="absolute -top-12 border-4 border-white h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-700 shadow-md">
-                {user?.name?.charAt(0) || 'U'}
+              <div className="absolute -top-12 left-8 border-4 border-white h-24 w-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-md overflow-hidden shrink-0">
+                {user?.profileImage || user?.profilePic || user?.avatar ? (
+                  <img src={user.profileImage || user.profilePic || user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0)?.toUpperCase() || 'U'
+                )}
               </div>
               
-              <div className="mt-16 sm:mt-14 pb-6 border-b border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User Name'}</h2>
-                <p className="text-gray-500 flex items-center gap-2 mt-1">
-                  <Mail className="w-4 h-4" />
-                  {user?.email || 'user@example.com'}
-                </p>
+              <div className="pt-16 sm:pt-14 pb-6 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User Name'}</h2>
+                    <p className="text-gray-500 flex items-center gap-2 mt-1">
+                      <Mail className="w-4 h-4" />
+                      {user?.email || 'user@example.com'}
+                    </p>
+                  </div>
+                  <div>
+                    {user?.isVerified ? (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <CheckCircle className="w-4 h-4" />
+                        Verified
+                      </span>
+                    ) : (
+                      <button
+                        onClick={handleSendVerification}
+                        className="inline-flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-linear-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800 transition-colors shadow-sm cursor-pointer"
+                      >
+                        <AlertCircle className="w-4 h-4" />
+                        Verify Email
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="py-6 space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
@@ -96,6 +155,54 @@ const Profile_Page = () => {
             </div>
           </div>
         </div>
+
+        {/* OTP Modal */}
+        {showOtpModal && (
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <h3 className="text-lg font-bold text-gray-900">Verify Email</h3>
+                <button
+                  onClick={() => setShowOtpModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-gray-600 mb-6">
+                  {otpMessage || 'Please enter the 6-digit OTP sent to your email address.'}
+                </p>
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      OTP Code
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="e.g. 123456"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+                  {otpError && (
+                    <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                      {otpError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    className="w-full bg-linear-to-r from-blue-600 to-indigo-700 text-white font-medium py-2.5 rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all shadow-sm focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 cursor-pointer"
+                  >
+                    Verify
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
