@@ -16,17 +16,16 @@ const Sidebar = () => {
   const navItems = [
     { label: 'Dashboard', icon: Home, route: '/dashboard' },
     { label: 'Profile', icon: User, route: '/profile' },
-    { label: 'Team', icon: Users, route: '/team' },
     { label: 'Settings', icon: Settings, route: '/settings' },
   ];
 
   return (
-    <aside className="h-screen w-64 bg-gray-900 text-white flex flex-col justify-between border-r border-gray-800 transition-all duration-300">
+    <aside className="h-screen w-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col justify-between border-r border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div>
         {/* App Logo/Header */}
-        <div className="p-6 border-b border-gray-800">
-          <h2 className="text-2xl font-bold tracking-tight text-blue-400">
-            CUBE<span className="text-white">COLLAB</span>
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400" style={{ fontFamily: '"Bruno Ace", sans-serif' }}>
+            CUBE<span className="text-gray-900 dark:text-white">COLLAB</span>
           </h2>
         </div>
 
@@ -35,11 +34,11 @@ const Sidebar = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
-              <Link
-                key={item.label}
-                to={item.route}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group cursor-pointer"
-              >
+                <Link
+                  key={item.label}
+                  to={item.route}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors group cursor-pointer"
+                >
                 <Icon className="w-5 h-5 group-hover:text-blue-400 transition-colors" />
                 <span className="font-medium">{item.label}</span>
               </Link>
@@ -49,7 +48,7 @@ const Sidebar = () => {
       </div>
 
       {/* User Profile / Logout Section */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
           <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden">
             {user?.profileImage || user?.profilePic || user?.avatar ? (
@@ -65,7 +64,7 @@ const Sidebar = () => {
         
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-950/30 transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Logout</span>
