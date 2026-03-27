@@ -51,6 +51,7 @@ const updateDoc = async (req, res) => {
     const { title, content, isPublic } = req.body
     try {
         const doc = await documentModel.findById(id)
+        const version = await versionModel.findById(id)
 
         const isOwner = doc.owner.toString() === req.user._id.toString();
 
@@ -74,13 +75,16 @@ const updateDoc = async (req, res) => {
         }
         if (content) {
             doc.content = content
+            version.content=content
         }
         if (isPublic) {
             doc.isPublic = isPublic
         }
         doc.lastEditedBy = req.user._id
+        version.editedBy = req.user._id
 
         await doc.save()
+        await version.save()
         return res.status(200).json({ success: true, msg: "The Document edited successfuly" })
 
 
