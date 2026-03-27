@@ -1,5 +1,6 @@
 import collaborationModel from "../models/collaboration.model.js";
 import documentModel from "../models/document.model.js";
+import versionModel from "../models/version.model.js";
 
 const addDocument = async (req, res) => {
     try {
@@ -13,7 +14,14 @@ const addDocument = async (req, res) => {
             lastEditedBy: req.user._id
 
         })
+       
         await newDoc.save()
+        const version = new versionModel({
+            documentId:newDoc._id,
+            content,
+            editedBy: req.user._id
+        })
+        await version.save()
         console.log("New doc added");
         return res.status(200).json({ success: true, msg: "new Doc added successfuly", document: newDoc })
 
@@ -43,6 +51,7 @@ const updateDoc = async (req, res) => {
     const { title, content, isPublic } = req.body
     try {
         const doc = await documentModel.findById(id)
+        const version = await versionModel.findById(id)
 
         const isOwner = doc.owner.toString() === req.user._id.toString();
 
@@ -66,13 +75,16 @@ const updateDoc = async (req, res) => {
         }
         if (content) {
             doc.content = content
+            version.content=content
         }
         if (isPublic) {
             doc.isPublic = isPublic
         }
         doc.lastEditedBy = req.user._id
+        version.editedBy = req.user._id
 
         await doc.save()
+        await version.save()
         return res.status(200).json({ success: true, msg: "The Document edited successfuly" })
 
 

@@ -6,24 +6,24 @@ const Home_Page = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800 selection:bg-blue-100">
+    <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 selection:bg-blue-100 dark:selection:bg-blue-900">
       {/* Navigation */}
-      <nav className="container mx-auto px-6 py-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
+      <nav className="container mx-auto px-6 py-6 flex justify-between items-center sticky top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md z-50 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
             C
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">Cube Collab</span>
+          <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">Cube Collab</span>
         </div>
-        <div className="hidden md:flex gap-8 text-sm font-medium text-gray-600">
-          <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
-          <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimonials</a>
+        <div className="hidden md:flex gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
+          <a href="#features" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</a>
+          <a href="#how-it-works" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">How it Works</a>
+          <a href="#testimonials" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Testimonials</a>
         </div>
         <div className="flex gap-4">
           <button 
             onClick={() => navigate('/login')}
-            className="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 transition-colors"
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium px-4 py-2 transition-colors"
           >
             Log in
           </button>
@@ -53,11 +53,11 @@ const Home_Page = () => {
             </span>
             Cube Collab 2.0 is now live
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-gray-900">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-gray-900 dark:text-white">
             Collaborate on documents <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">at the speed of thought</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">at the speed of thought</span>
           </h1>
-          <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             The simplest, most powerful way to write, plan, and organize together. Build your team's collective brain with beautiful, living documents.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -70,7 +70,7 @@ const Home_Page = () => {
             </button>
             <button 
               onClick={() => navigate('/login')}
-              className="w-full sm:w-auto px-8 py-4 rounded-full text-lg font-medium text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all hover:-translate-y-1"
+              className="w-full sm:w-auto px-8 py-4 rounded-full text-lg font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:-translate-y-1"
             >
               Log in to Account
             </button>
@@ -129,11 +129,11 @@ const Home_Page = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-gray-50 py-24">
+      <section id="features" className="bg-gray-50 dark:bg-gray-900/50 py-24">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-20 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Everything you need to work better</h2>
-            <p className="text-xl text-gray-500">Powerful features hidden behind a beautiful, minimal interface that gets out of your way.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Everything you need to work better</h2>
+            <p className="text-xl text-gray-500 dark:text-gray-400">Powerful features hidden behind a beautiful, minimal interface that gets out of your way.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-10">
@@ -159,12 +159,12 @@ const Home_Page = () => {
                 description: "Your data belongs to you. We use industry-standard encryption to ensure your private documents remain exactly that—private."
               }
             ].map((feature, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6">
+              <div key={idx} className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center mb-6">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{feature.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>

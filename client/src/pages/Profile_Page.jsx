@@ -103,24 +103,24 @@ const Profile_Page = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500 animate-pulse">Loading profile...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading profile...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 overflow-hidden font-sans">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans">
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-500 mt-1">Manage your personal information and settings.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your personal information and settings.</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
             <div className="h-32 bg-linear-to-r from-blue-600 to-indigo-700"></div>
             
             <div className="px-8 pb-8 relative">
@@ -155,7 +155,7 @@ const Profile_Page = () => {
                 )}
               </div>
               
-              <div className="pt-16 sm:pt-14 pb-6 border-b border-gray-100">
+              <div className="pt-16 sm:pt-14 pb-6 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     {isEditing ? (
@@ -163,13 +163,13 @@ const Profile_Page = () => {
                         type="text"
                         value={editForm.name}
                         onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                        className="text-2xl font-bold text-gray-900 border-b border-gray-300 focus:border-blue-600 outline-none bg-transparent px-1 py-0.5 w-full sm:w-auto"
+                        className="text-2xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 focus:border-blue-600 outline-none bg-transparent px-1 py-0.5 w-full sm:w-auto"
                         placeholder="Your Name"
                       />
                     ) : (
-                      <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User Name'}</h2>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.name || 'User Name'}</h2>
                     )}
-                    <p className="text-gray-500 flex items-center gap-2 mt-1">
+                    <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
                       <Mail className="w-4 h-4" />
                       {user?.email || 'user@example.com'}
                     </p>
@@ -195,7 +195,7 @@ const Profile_Page = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={handleCancelEdit}
-                          className="p-2 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                          className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
                           title="Cancel"
                         >
                           <X className="w-5 h-5" />
@@ -203,7 +203,7 @@ const Profile_Page = () => {
                         <button
                           onClick={handleSaveProfile}
                           disabled={isLoading}
-                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm disabled:opacity-70 cursor-pointer"
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-70 cursor-pointer"
                         >
                           <Save className="w-4 h-4" />
                           <span className="text-sm font-medium">Save</span>
@@ -212,7 +212,7 @@ const Profile_Page = () => {
                     ) : (
                       <button
                         onClick={handleEditClick}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors shadow-sm cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer"
                       >
                         <Edit2 className="w-4 h-4" />
                         <span className="text-sm font-medium">Edit Profile</span>
@@ -229,56 +229,56 @@ const Profile_Page = () => {
 
               <div className="py-6 space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <User className="w-5 h-5 text-gray-400" />
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     Account Details
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-500">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
                       {isEditing ? (
                         <input
                           type="text"
                           value={editForm.name}
                           onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 font-medium"
+                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 dark:text-white bg-transparent font-medium"
                         />
                       ) : (
-                        <p className="mt-1 text-gray-900 font-medium">{user?.name}</p>
+                        <p className="mt-1 text-gray-900 dark:text-white font-medium">{user?.name}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-500">Email Address</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</label>
                       {isEditing ? (
                         <input
                           type="email"
                           value={editForm.email}
                           onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 font-medium"
+                          className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 dark:text-white bg-transparent font-medium"
                         />
                       ) : (
-                        <p className="mt-1 text-gray-900 font-medium">{user?.email}</p>
+                        <p className="mt-1 text-gray-900 dark:text-white font-medium">{user?.email}</p>
                       )}
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <Settings className="w-5 h-5 text-gray-400" />
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     Preferences
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-500">Account Role</label>
-                      <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Account Role</label>
+                      <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">
                         {user?.role || 'Member'}
                       </span>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-500">Joined Date</label>
-                      <p className="mt-1 text-gray-900 font-medium flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-gray-400" />
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Joined Date</label>
+                      <p className="mt-1 text-gray-900 dark:text-white font-medium flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Recently'}
                       </p>
                     </div>
@@ -292,23 +292,23 @@ const Profile_Page = () => {
         {/* OTP Modal */}
         {showOtpModal && (
           <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900">Verify Email</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Verify Email</h3>
                 <button
                   onClick={() => setShowOtpModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="p-6">
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   {otpMessage || 'Please enter the 6-digit OTP sent to your email address.'}
                 </p>
                 <form onSubmit={handleVerifyOtp} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       OTP Code
                     </label>
                     <input
@@ -317,7 +317,7 @@ const Profile_Page = () => {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="e.g. 123456"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                     />
                   </div>
                   {otpError && (
