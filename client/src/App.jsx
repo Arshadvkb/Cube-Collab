@@ -9,10 +9,33 @@ import Document_Editor from './pages/Document_Editor'
 import Document_View from './pages/Document_View'
 import ForgotPassword from './pages/ForgotPassword'
 import Settings_Page from './pages/Settings_Page'
+import { useEffect } from 'react'
+import socket from './lib/socket_client'
 
 export const App = () => {
+    useEffect(()=> {
+    // Connect to the server
+    socket.connect();
+
+
+    socket.on("connect", () => {
+      console.log("✅ Connected to Socket.io:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log("❌ Connection Error:", err.message);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.disconnect();
+    };
+  }, []);
   return (
     <div>
+    
      <Routes>
       <Route element={<Login_Page/>} path='/login' />
       <Route element={<Register_Page/>} path='/register' />

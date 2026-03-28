@@ -5,7 +5,7 @@ import versionModel from "../models/version.model.js";
 const addDocument = async (req, res) => {
     try {
         const { title, content, isPublic } = req.body
-       
+
         const newDoc = new documentModel({
             title,
             content,
@@ -14,10 +14,10 @@ const addDocument = async (req, res) => {
             lastEditedBy: req.user._id
 
         })
-       
+
         await newDoc.save()
         const version = new versionModel({
-            documentId:newDoc._id,
+            documentId: newDoc._id,
             content,
             editedBy: req.user._id
         })
@@ -35,7 +35,10 @@ const viewDoc = async (req, res) => {
     try {
         const user = req.user._id
         const doc = await documentModel.find({ owner: user })
-        console.log(doc);
+        const sharedDocs = await collaborationModel.find({ userId: user }).populate("documentId")
+        const sharedDocuments = sharedDocs.map((item) => item.documentId)
+        doc.push(...sharedDocuments)    
+    
         return res.status(200).json({ success: true, msg: "Available Documents", documents: doc })
 
 
@@ -51,7 +54,11 @@ const updateDoc = async (req, res) => {
     const { title, content, isPublic } = req.body
     try {
         const doc = await documentModel.findById(id)
-        const version = await versionModel.findById(id)
+        const version = await versionModel.findOne({ documentId: id })
+
+        if (!doc) {
+            return res.status(404).json({ message: "Document not found" });
+        }
 
         const isOwner = doc.owner.toString() === req.user._id.toString();
 
@@ -75,7 +82,7 @@ const updateDoc = async (req, res) => {
         }
         if (content) {
             doc.content = content
-            version.content=content
+            version.content = content
         }
         if (isPublic) {
             doc.isPublic = isPublic
