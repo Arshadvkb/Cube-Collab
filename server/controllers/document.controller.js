@@ -35,6 +35,9 @@ const viewDoc = async (req, res) => {
     try {
         const user = req.user._id
         const doc = await documentModel.find({ owner: user })
+        const sharedDocs = await collaborationModel.find({ userId: user }).populate("documentId")
+        const sharedDocuments = sharedDocs.map((item) => item.documentId)
+        doc.push(...sharedDocuments)    
         console.log(doc);
         return res.status(200).json({ success: true, msg: "Available Documents", documents: doc })
 

@@ -11,6 +11,7 @@ import connectDb from "./config/mongodb.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import documentRouter from "./routes/document.route.js";
+import collaboratorRoute from "./routes/collaborator.route.js";
 
 const port = process.env.PORT || 5000
 
@@ -42,6 +43,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/document", documentRouter)
+app.use("/api/collaborator",collaboratorRoute)
 
 connectDb()
 app.listen(port, () => {
