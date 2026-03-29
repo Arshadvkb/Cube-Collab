@@ -1,6 +1,6 @@
-import express from "express";
-import { getProfile, updateProfile } from "../controllers/user.controller.js";
-import { upload } from "../middleware/multer.js";
+import express from 'express';
+import { getProfile, updateProfile } from '../controllers/user.controller.js';
+import { upload } from '../middleware/multer.js';
 
 const userRouter = express.Router();
 
@@ -30,7 +30,7 @@ const userRouter = express.Router();
  *       404:
  *         description: User not found
  */
-userRouter.get("/profile/:id", getProfile);
+userRouter.get('/profile/:id', getProfile);
 
 /**
  * @swagger
@@ -67,6 +67,6 @@ userRouter.get("/profile/:id", getProfile);
  *       404:
  *         description: User not found
  */
-userRouter.put("/update-profile/:id", upload.single("avatar"), updateProfile);
+userRouter.put('/update-profile/:id', upload.single('avatar'), updateProfile);
 
-export default userRouter;  
+export default userRouter;

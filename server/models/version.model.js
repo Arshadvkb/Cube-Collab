@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const versionSchema = new mongoose.Schema(
   {
     documentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Document",
+      ref: 'Document',
       required: true,
       index: true,
     },
@@ -16,12 +16,13 @@ const versionSchema = new mongoose.Schema(
 
     editedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-const versionModel = mongoose.models.Version || mongoose.model("Version", versionSchema);
+const versionModel =
+  mongoose.models.Version || mongoose.model('Version', versionSchema);
 
 export default versionModel;

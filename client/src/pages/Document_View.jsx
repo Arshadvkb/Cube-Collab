@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, User } from 'lucide-react';
 // Import Quill CSS for block quote, lists rendering accurately
 import 'react-quill/dist/quill.snow.css';
 
@@ -60,6 +60,10 @@ const Document_View = () => {
               {document?.isPublic ? 'Public' : 'Private'}
             </span>
           </div>
+          <div className="flex items-center gap-4">
+          <button
+          className='flex items-center gap-2 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-700 dark:text-green-400 px-5 py-2 rounded-lg font-medium transition-colors shadow-sm'
+          ><User/>Add Collaborator</button>
           <button 
             onClick={() => navigate(`/document/edit/${id}`)}
             className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-5 py-2 rounded-lg font-medium transition-colors shadow-sm"
@@ -67,6 +71,7 @@ const Document_View = () => {
             <Edit size={18} />
             Edit Document
           </button>
+          </div>
         </header>
 
         <section className="p-8 mx-auto w-full max-w-4xl">
