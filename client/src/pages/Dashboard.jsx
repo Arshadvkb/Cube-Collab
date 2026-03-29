@@ -3,11 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useAuthStore } from '../store/useAuthStore';
 import { useDocumentStore } from '../store/useDocumentStore';
-import { PlusCircle, FileText, Edit, Eye, Delete, Trash, Download, DownloadIcon } from 'lucide-react';
+import {
+  PlusCircle,
+  FileText,
+  Edit,
+  Eye,
+  Delete,
+  Trash,
+  Download,
+  DownloadIcon,
+} from 'lucide-react';
 
 const Dashboard = () => {
   const { user, checkAuth, isLoading: isAuthLoading } = useAuthStore();
-  const { documents, fetchDocuments, isLoading: isDocLoading } = useDocumentStore();
+  const {
+    documents,
+    fetchDocuments,
+    isLoading: isDocLoading,
+  } = useDocumentStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +31,9 @@ const Dashboard = () => {
   if (isAuthLoading || isDocLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading dashboard...</p>
+        <p className="text-gray-500 dark:text-gray-400 animate-pulse">
+          Loading dashboard...
+        </p>
       </div>
     );
   }
@@ -31,14 +46,14 @@ const Dashboard = () => {
         <header className="bg-white dark:bg-gray-900 px-8 py-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Welcome back, {user?.name || "User"}!
+              Welcome back, {user?.name || 'User'}!
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               Here are your documents.
             </p>
           </div>
           <button
-            onClick={() => navigate("/document/new")}
+            onClick={() => navigate('/document/new')}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
           >
             <PlusCircle size={20} />
@@ -59,9 +74,9 @@ const Dashboard = () => {
                       <FileText size={24} />
                     </div>
                     <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${doc.isPublic ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`}
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${doc.isPublic ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
                     >
-                      {doc.isPublic ? "Public" : "Private"}
+                      {doc.isPublic ? 'Public' : 'Private'}
                     </span>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-1 mb-2">
@@ -80,7 +95,7 @@ const Dashboard = () => {
                     >
                       <Edit size={16} /> Edit
                     </button>
-                   
+
                     <button className="w-10 flex-1 flex items-center justify-center gap-2 py-2 text-red-500 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium transition-colors">
                       <Trash size={16} /> Delete
                     </button>
@@ -101,7 +116,7 @@ const Dashboard = () => {
                 document to organize your ideas.
               </p>
               <button
-                onClick={() => navigate("/document/new")}
+                onClick={() => navigate('/document/new')}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
               >
                 <PlusCircle size={20} />

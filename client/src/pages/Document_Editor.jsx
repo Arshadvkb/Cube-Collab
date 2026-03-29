@@ -9,11 +9,11 @@ import { ArrowLeft, Save } from 'lucide-react';
 
 const quillModules = {
   toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
     ['link', 'image', 'code-block'],
-    ['clean']
+    ['clean'],
   ],
 };
 
@@ -21,9 +21,10 @@ const Document_Editor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
-  
+
   const { checkAuth } = useAuthStore();
-  const { addDocument, updateDocument, getDocumentById, fetchDocuments } = useDocumentStore();
+  const { addDocument, updateDocument, getDocumentById, fetchDocuments } =
+    useDocumentStore();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -33,20 +34,20 @@ const Document_Editor = () => {
 
   useEffect(() => {
     checkAuth();
-    
+
     // If editing, populate the fields
     if (isEditing) {
       const loadDoc = async () => {
         // Ensure documents are loaded
         await fetchDocuments();
         const doc = getDocumentById(id);
-        
+
         if (doc) {
           setTitle(doc.title);
-          setContent(typeof doc.content === 'object' ? '' : (doc.content || ''));
+          setContent(typeof doc.content === 'object' ? '' : doc.content || '');
           setIsPublic(doc.isPublic || false);
         } else {
-          setError('Document not found or you don\'t have access.');
+          setError("Document not found or you don't have access.");
         }
       };
       loadDoc();
@@ -58,10 +59,10 @@ const Document_Editor = () => {
       setError('Title is required');
       return;
     }
-    
+
     setIsSaving(true);
     setError('');
-    
+
     try {
       if (isEditing) {
         await updateDocument(id, { title, content, isPublic });
@@ -70,22 +71,22 @@ const Document_Editor = () => {
       }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.msg || err.message || 'Failed to save document');
+      setError(
+        err.response?.data?.msg || err.message || 'Failed to save document'
+      );
     } finally {
       setIsSaving(false);
     }
   };
 
-
-
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans">
       <Sidebar />
-      
+
       <main className="flex-1 flex flex-col h-screen overflow-y-auto">
         <header className="bg-white dark:bg-gray-900 px-8 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => navigate('/dashboard')}
               className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             >
@@ -97,7 +98,7 @@ const Document_Editor = () => {
           </div>
           <div className="flex items-center gap-4">
             {error && <span className="text-red-500 text-sm">{error}</span>}
-            <button 
+            <button
               onClick={handleSave}
               disabled={isSaving}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
@@ -112,9 +113,11 @@ const Document_Editor = () => {
           <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex-1 flex flex-col">
             <div className="mb-6 flex gap-6 items-start">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Title</label>
-                <input 
-                  type="text" 
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Document Title
+                </label>
+                <input
+                  type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter a descriptive title..."
@@ -123,22 +126,24 @@ const Document_Editor = () => {
               </div>
               <div className="pt-7">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={isPublic}
                     onChange={(e) => setIsPublic(e.target.checked)}
                     className="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-gray-700 bg-transparent focus:ring-blue-500"
                   />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Make Public</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Make Public
+                  </span>
                 </label>
               </div>
             </div>
-            
+
             <div className="flex-1 flex flex-col h-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-white dark-quill">
-              <ReactQuill 
-                theme="snow" 
-                value={content} 
-                onChange={setContent} 
+              <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
                 modules={quillModules}
                 className="flex-1 h-full flex flex-col document-editor"
                 placeholder="Start writing your document here..."

@@ -2,12 +2,31 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import Sidebar from '../components/Sidebar';
-import { User, Mail, Calendar, Settings, CheckCircle, AlertCircle, X, Edit2, Save, Camera } from 'lucide-react';
+import {
+  User,
+  Mail,
+  Calendar,
+  Settings,
+  CheckCircle,
+  AlertCircle,
+  X,
+  Edit2,
+  Save,
+  Camera,
+} from 'lucide-react';
 
 const Profile_Page = () => {
-  const { user, isAuthenticated, isLoading, checkAuth, sendVerificationEmail, verifyEmail, updateProfile } = useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    checkAuth,
+    sendVerificationEmail,
+    verifyEmail,
+    updateProfile,
+  } = useAuthStore();
   const navigate = useNavigate();
-  
+
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
@@ -42,7 +61,9 @@ const Profile_Page = () => {
       setOtpMessage('Verification email sent. Please check your inbox.');
       setShowOtpModal(true);
     } catch (error) {
-       setOtpError(useAuthStore.getState().error || 'Failed to send verification email');
+      setOtpError(
+        useAuthStore.getState().error || 'Failed to send verification email'
+      );
     }
   };
 
@@ -64,7 +85,9 @@ const Profile_Page = () => {
   const handleEditClick = () => {
     setIsEditing(true);
     setEditForm({ name: user?.name || '', email: user?.email || '' });
-    setPreviewImage(user?.profileImage || user?.profilePic || user?.avatar || null);
+    setPreviewImage(
+      user?.profileImage || user?.profilePic || user?.avatar || null
+    );
     setSelectedImage(null);
     setUpdateError('');
   };
@@ -93,18 +116,22 @@ const Profile_Page = () => {
       if (selectedImage) {
         formData.append('avatar', selectedImage);
       }
-      
+
       await updateProfile(user._id, formData);
       setIsEditing(false);
     } catch (error) {
-      setUpdateError(useAuthStore.getState().error || 'Failed to update profile');
+      setUpdateError(
+        useAuthStore.getState().error || 'Failed to update profile'
+      );
     }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading profile...</p>
+        <p className="text-gray-500 dark:text-gray-400 animate-pulse">
+          Loading profile...
+        </p>
       </div>
     );
   }
@@ -116,45 +143,57 @@ const Profile_Page = () => {
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your personal information and settings.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Profile
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              Manage your personal information and settings.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
             <div className="h-32 bg-linear-to-r from-blue-600 to-indigo-700"></div>
-            
+
             <div className="px-8 pb-8 relative">
               <div className="absolute -top-12 left-8 border-4 border-white h-24 w-24 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-md overflow-hidden shrink-0 group">
                 {isEditing ? (
                   <>
-                    <img 
-                      src={previewImage || user?.profileImage || user?.profilePic || user?.avatar || `https://ui-avatars.com/api/?name=${user?.name || 'U'}`} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover" 
+                    <img
+                      src={
+                        previewImage ||
+                        user?.profileImage ||
+                        user?.profilePic ||
+                        user?.avatar ||
+                        `https://ui-avatars.com/api/?name=${user?.name || 'U'}`
+                      }
+                      alt="Profile"
+                      className="w-full h-full object-cover"
                     />
-                    <div 
+                    <div
                       className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <Camera className="w-8 h-8 text-white" />
                     </div>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="image/*" 
-                      onChange={handleImageChange} 
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
                     />
                   </>
+                ) : user?.profileImage || user?.profilePic || user?.avatar ? (
+                  <img
+                    src={user.profileImage || user.profilePic || user.avatar}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  user?.profileImage || user?.profilePic || user?.avatar ? (
-                    <img src={user.profileImage || user.profilePic || user.avatar} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    user?.name?.charAt(0)?.toUpperCase() || 'U'
-                  )
+                  user?.name?.charAt(0)?.toUpperCase() || 'U'
                 )}
               </div>
-              
+
               <div className="pt-16 sm:pt-14 pb-6 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
@@ -162,12 +201,16 @@ const Profile_Page = () => {
                       <input
                         type="text"
                         value={editForm.name}
-                        onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, name: e.target.value })
+                        }
                         className="text-2xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 focus:border-blue-600 outline-none bg-transparent px-1 py-0.5 w-full sm:w-auto"
                         placeholder="Your Name"
                       />
                     ) : (
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.name || 'User Name'}</h2>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {user?.name || 'User Name'}
+                      </h2>
                     )}
                     <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
                       <Mail className="w-4 h-4" />
@@ -190,7 +233,7 @@ const Profile_Page = () => {
                         Verify Email
                       </button>
                     )}
-                    
+
                     {isEditing ? (
                       <div className="flex items-center gap-2">
                         <button
@@ -215,7 +258,9 @@ const Profile_Page = () => {
                         className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer"
                       >
                         <Edit2 className="w-4 h-4" />
-                        <span className="text-sm font-medium">Edit Profile</span>
+                        <span className="text-sm font-medium">
+                          Edit Profile
+                        </span>
                       </button>
                     )}
                   </div>
@@ -235,29 +280,41 @@ const Profile_Page = () => {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Full Name
+                      </label>
                       {isEditing ? (
                         <input
                           type="text"
                           value={editForm.name}
-                          onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, name: e.target.value })
+                          }
                           className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 dark:text-white bg-transparent font-medium"
                         />
                       ) : (
-                        <p className="mt-1 text-gray-900 dark:text-white font-medium">{user?.name}</p>
+                        <p className="mt-1 text-gray-900 dark:text-white font-medium">
+                          {user?.name}
+                        </p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Email Address
+                      </label>
                       {isEditing ? (
                         <input
                           type="email"
                           value={editForm.email}
-                          onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, email: e.target.value })
+                          }
                           className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 dark:text-white bg-transparent font-medium"
                         />
                       ) : (
-                        <p className="mt-1 text-gray-900 dark:text-white font-medium">{user?.email}</p>
+                        <p className="mt-1 text-gray-900 dark:text-white font-medium">
+                          {user?.email}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -270,16 +327,22 @@ const Profile_Page = () => {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Account Role</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Account Role
+                      </label>
                       <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">
                         {user?.role || 'Member'}
                       </span>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">Joined Date</label>
+                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Joined Date
+                      </label>
                       <p className="mt-1 text-gray-900 dark:text-white font-medium flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Recently'}
+                        {user?.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString()
+                          : 'Recently'}
                       </p>
                     </div>
                   </div>
@@ -294,7 +357,9 @@ const Profile_Page = () => {
           <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Verify Email</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  Verify Email
+                </h3>
                 <button
                   onClick={() => setShowOtpModal(false)}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
@@ -304,7 +369,8 @@ const Profile_Page = () => {
               </div>
               <div className="p-6">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  {otpMessage || 'Please enter the 6-digit OTP sent to your email address.'}
+                  {otpMessage ||
+                    'Please enter the 6-digit OTP sent to your email address.'}
                 </p>
                 <form onSubmit={handleVerifyOtp} className="space-y-4">
                   <div>

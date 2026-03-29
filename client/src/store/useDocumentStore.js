@@ -14,16 +14,19 @@ export const useDocumentStore = create((set, get) => ({
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/document/view`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       set({
         documents: response.data.documents || [],
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
       set({
-        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to fetch documents',
-        isLoading: false
+        error:
+          error.response?.data?.msg ||
+          error.response?.data?.message ||
+          'Failed to fetch documents',
+        isLoading: false,
       });
     }
   },
@@ -32,17 +35,24 @@ export const useDocumentStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/document/add`, documentData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      const response = await axios.post(
+        `${API_URL}/document/add`,
+        documentData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       // Refresh documents
       await get().fetchDocuments();
       return response.data;
     } catch (error) {
       set({
-        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to add document',
-        isLoading: false
+        error:
+          error.response?.data?.msg ||
+          error.response?.data?.message ||
+          'Failed to add document',
+        isLoading: false,
       });
       throw error;
     }
@@ -52,17 +62,24 @@ export const useDocumentStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/document/update/${id}`, documentData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      const response = await axios.put(
+        `${API_URL}/document/update/${id}`,
+        documentData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       // Refresh documents
       await get().fetchDocuments();
       return response.data;
     } catch (error) {
       set({
-        error: error.response?.data?.msg || error.response?.data?.message || 'Failed to update document',
-        isLoading: false
+        error:
+          error.response?.data?.msg ||
+          error.response?.data?.message ||
+          'Failed to update document',
+        isLoading: false,
       });
       throw error;
     }
@@ -71,5 +88,5 @@ export const useDocumentStore = create((set, get) => ({
   getDocumentById: (id) => {
     const { documents } = get();
     return documents.find((doc) => doc._id === id);
-  }
+  },
 }));

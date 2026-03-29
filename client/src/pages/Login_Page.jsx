@@ -35,7 +35,9 @@ const Login_Page = () => {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">
             Welcome Back
           </h2>
-          <p className="text-gray-500 dark:text-gray-400">Sign in to continue to Cube Collab</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Sign in to continue to Cube Collab
+          </p>
         </div>
 
         {error && (
@@ -69,7 +71,12 @@ const Login_Page = () => {
           <div>
             <label className="flex text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1 justify-between">
               Password
-              <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-normal transition-colors">Forgot?</Link>
+              <Link
+                to="/forgot-password"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-normal transition-colors"
+              >
+                Forgot?
+              </Link>
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors">
@@ -105,7 +112,10 @@ const Login_Page = () => {
 
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
+          <Link
+            to="/register"
+            className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
+          >
             Create one now
           </Link>
         </div>
