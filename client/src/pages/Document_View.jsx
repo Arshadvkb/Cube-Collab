@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { ArrowLeft, Edit, User } from 'lucide-react';
+import { useCollaboratorStore } from '../store/useCollaboratorStore';
+import { ArrowLeft, Edit, User, X } from 'lucide-react';
 // Import Quill CSS for block quote, lists rendering accurately
 import 'react-quill/dist/quill.snow.css';
 
@@ -13,10 +14,16 @@ const Document_View = () => {
 
   const { checkAuth } = useAuthStore();
   const { getDocumentById, fetchDocuments } = useDocumentStore();
+  const { addCollaborator } = useCollaboratorStore();
 
   const [document, setDocument] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showCollaboratorModal, setShowCollaboratorModal] = useState(false);
+  const [collaboratorEmail, setCollaboratorEmail] = useState('');
+  const [collaboratorRole, setCollaboratorRole] = useState('editor');
+  const [addingCollaborator, setAddingCollaborator] = useState(false);
+  const [collaboratorMessage, setCollaboratorMessage] = useState('');
 
   useEffect(() => {
     const init = async () => {
@@ -34,6 +41,31 @@ const Document_View = () => {
 
     init();
   }, [checkAuth, id, getDocumentById, fetchDocuments]);
+
+  const handleAddCollaborator = async (e) => {
+    e.preventDefault();
+    if (!collaboratorEmail.trim()) {
+      setCollaboratorMessage('Please enter an email address');
+      return;
+    }
+
+    setAddingCollaborator(true);
+    setCollaboratorMessage('');
+    try {
+      await addCollaborator(id, collaboratorEmail, collaboratorRole);
+      setCollaboratorMessage('Collaborator added successfully!');
+      setCollaboratorEmail('');
+      setCollaboratorRole('editor');
+      setTimeout(() => {
+        setShowCollaboratorModal(false);
+        setCollaboratorMessage('');
+      }, 1500);
+    } catch (err) {
+      setCollaboratorMessage(err.response?.data?.msg || 'Failed to add collaborator');
+    } finally {
+      setAddingCollaborator(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -65,7 +97,10 @@ const Document_View = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-700 dark:text-green-400 px-5 py-2 rounded-lg font-medium transition-colors shadow-sm">
+            <button
+              onClick={() => setShowCollaboratorModal(true)}
+              className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-700 dark:text-green-400 px-5 py-2 rounded-lg font-medium transition-colors shadow-sm"
+            >
               <User />
               Add Collaborator
             </button>
@@ -108,6 +143,90 @@ const Document_View = () => {
             </div>
           )}
         </section>
+
+        {/* Collaborator Modal */}
+        {showCollaboratorModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Add Collaborator</h2>
+                <button
+                  onClick={() => {
+                    setShowCollaboratorModal(false);
+                    setCollaboratorEmail('');
+                    setCollaboratorRole('editor');
+                    setCollaboratorMessage('');
+                  }}
+                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddCollaborator} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={collaboratorEmail}
+                    onChange={(e) => setCollaboratorEmail(e.target.value)}
+                    placeholder="collaborator@example.com"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                    disabled={addingCollaborator}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Role
+                  </label>
+                  <select
+                    value={collaboratorRole}
+                    onChange={(e) => setCollaboratorRole(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                    disabled={addingCollaborator}
+                  >
+                    <option value="viewer">Viewer</option>
+                    <option value="editor">Editor</option>
+                  </select>
+                </div>
+
+                {collaboratorMessage && (
+                  <div
+                    className={`p-3 rounded-lg text-sm font-medium ${collaboratorMessage.includes('successfully') ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400'}`}
+                  >
+                    {collaboratorMessage}
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCollaboratorModal(false);
+                      setCollaboratorEmail('');
+                      setCollaboratorRole('editor');
+                      setCollaboratorMessage('');
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+                    disabled={addingCollaborator}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={addingCollaborator}
+                  >
+                    {addingCollaborator ? 'Adding...' : 'Add'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

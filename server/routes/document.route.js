@@ -4,6 +4,7 @@ import {
   addDocument,
   updateDoc,
   viewDoc,
+  deleteDoc,
 } from '../controllers/document.controller.js';
 
 const documentRouter = express.Router();
@@ -99,5 +100,30 @@ documentRouter.get('/view', authenticateuser, viewDoc);
  *         description: Internal server error
  */
 documentRouter.put('/update/:id', authenticateuser, updateDoc);
+
+/**
+ * @swagger
+ * /api/document/delete/{id}:
+ *   delete:
+ *     summary: Delete a document
+ *     tags: [Document]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Document ID
+ *     responses:
+ *       200:
+ *         description: Document deleted successfully
+ *       400:
+ *         description: Bad request (not owner)
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Internal server error
+ */
+documentRouter.delete('/delete/:id', authenticateuser, deleteDoc);
 
 export default documentRouter;

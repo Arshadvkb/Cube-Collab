@@ -115,4 +115,37 @@ const updateDoc = async (req, res) => {
   }
 };
 
-export { addDocument, viewDoc, updateDoc };
+const deleteDoc = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const doc = await documentModel.findById(id);
+
+    if (!doc) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+
+    const isOwner = doc.owner.toString() === req.user._id.toString();
+    if (!isOwner) {
+      return res.status(403).json({
+        success: false,
+        msg: 'Unauthorized: Only the owner can delete this document',
+      });
+    }
+
+    await documentModel.findByIdAndDelete(id);
+    await versionModel.deleteMany({ documentId: id });
+    await collaborationModel.deleteMany({ documentId: id });
+    return res
+      .status(200)
+      .json({ success: true, msg: 'The Document deleted successfuly' });
+  } catch (error) {
+    console.log('error in deleting document :' + error.message);
+    return res.status(500).json({
+      success: false,
+      msg: 'Internal server error',
+      error: error.message,
+    });
+  }
+};
+
+export { addDocument, viewDoc, updateDoc, deleteDoc };
