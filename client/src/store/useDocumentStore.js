@@ -89,4 +89,30 @@ export const useDocumentStore = create((set, get) => ({
     const { documents } = get();
     return documents.find((doc) => doc._id === id);
   },
+
+  deleteDocument: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(
+        `${API_URL}/document/delete/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Refresh documents
+      await get().fetchDocuments();
+      return response.data;
+    } catch (error) {
+      set({
+        error:
+          error.response?.data?.msg ||
+          error.response?.data?.message ||
+          'Failed to delete document',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
 }));

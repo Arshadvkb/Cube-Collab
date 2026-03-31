@@ -19,6 +19,7 @@ const Dashboard = () => {
   const {
     documents,
     fetchDocuments,
+    deleteDocument,
     isLoading: isDocLoading,
   } = useDocumentStore();
   const navigate = useNavigate();
@@ -96,7 +97,14 @@ const Dashboard = () => {
                       <Edit size={16} /> Edit
                     </button>
 
-                    <button className="w-10 flex-1 flex items-center justify-center gap-2 py-2 text-red-500 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium transition-colors">
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Are you sure you want to delete this document?')) {
+                          await deleteDocument(doc._id);
+                        }
+                      }}
+                      className="w-10 flex-1 flex items-center justify-center gap-2 py-2 text-red-500 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium transition-colors"
+                    >
                       <Trash size={16} /> Delete
                     </button>
                   </div>

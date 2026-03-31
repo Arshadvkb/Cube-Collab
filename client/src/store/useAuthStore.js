@@ -62,7 +62,15 @@ export const useAuthStore = create((set) => ({
   },
 
   // Action to logout user
-  logout: () => {
+  logout: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${API_URL}/auth/logout`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     localStorage.removeItem('token');
     set({
       user: null,
@@ -203,6 +211,28 @@ export const useAuthStore = create((set) => ({
           error.response?.data?.msg ||
           error.response?.data?.message ||
           'Failed to update profile',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  // Action to get user profile by ID
+  getProfile: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/user/profile/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error:
+          error.response?.data?.msg ||
+          error.response?.data?.message ||
+          'Failed to fetch profile',
         isLoading: false,
       });
       throw error;
