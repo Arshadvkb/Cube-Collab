@@ -1,152 +1,258 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import ReactQuill, { Quill } from 'react-quill';
+import QuillCursors from 'quill-cursors';
 import 'react-quill/dist/quill.snow.css';
-import Sidebar from '../components/Sidebar';
-import { useDocumentStore } from '../store/useDocumentStore';
+import 'quill-cursors/css';
+import socket from '../lib/socket_client';
 import { useAuthStore } from '../store/useAuthStore';
-import { ArrowLeft, Save } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
-const quillModules = {
+// Register the cursors module with Quill safely
+if (Quill && !Quill.imports['modules/cursors']) {
+  Quill.register('modules/cursors', QuillCursors);
+}
+
+const modules = {
   toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    ['link', 'image', 'code-block'],
-    ['clean']
+    [{ header: [1, 2, false] }],
+    ['bold', 'italic', 'underline'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['link'],
+    ['clean'],
   ],
+  cursors: {
+    transformOnTextChange: true,
+  },
+};
+
+// Generate consistent cursor colors based on the username
+const stringToColor = (str) => {
+  if (!str) return '#10b981'; // default emerald color
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += ('00' + value.toString(16)).substr(-2);
+  }
+  return color;
 };
 
 const Document_Editor = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const isEditing = !!id;
+  const { id } = useParams(); // ✅ dynamic ID
+  const quillRef = useRef(null);
   
-  const { checkAuth } = useAuthStore();
-  const { addDocument, updateDocument, getDocumentById, fetchDocuments } = useDocumentStore();
+  const user = useAuthStore((state) => state.user);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [value, setValue] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('Saved');
 
   useEffect(() => {
     checkAuth();
-    
-    // If editing, populate the fields
-    if (isEditing) {
-      const loadDoc = async () => {
-        // Ensure documents are loaded
-        await fetchDocuments();
-        const doc = getDocumentById(id);
-        
-        if (doc) {
-          setTitle(doc.title);
-          setContent(typeof doc.content === 'object' ? '' : (doc.content || ''));
-          setIsPublic(doc.isPublic || false);
-        } else {
-          setError('Document not found or you don\'t have access.');
-        }
-      };
-      loadDoc();
-    }
-  }, [checkAuth, id, isEditing, getDocumentById, fetchDocuments]);
+  }, [checkAuth]);
 
-  const handleSave = async () => {
-    if (!title.trim()) {
-      setError('Title is required');
-      return;
-    }
-    
-    setIsSaving(true);
-    setError('');
-    
-    try {
-      if (isEditing) {
-        await updateDocument(id, { title, content, isPublic });
-      } else {
-        await addDocument({ title, content, isPublic });
+  // Compute cursor color once based on current user
+  const myColor = useMemo(() => stringToColor(user?.name || user?._id || 'Anonymous'), [user]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    console.log('Joining doc:', id);
+
+    socket.emit('join-document', id);
+
+    // Load document
+    socket.on('load-document', (doc) => {
+      if (quillRef.current) {
+        const editor = quillRef.current.getEditor();
+        editor.setContents(doc);
+        editor.enable();
       }
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.msg || err.message || 'Failed to save document');
-    } finally {
-      setIsSaving(false);
-    }
+      setLoaded(true);
+    });
+
+    // Receive changes
+    socket.on('receive-changes', (delta) => {
+      if (quillRef.current) {
+        const editor = quillRef.current.getEditor();
+        editor.updateContents(delta);
+      }
+    });
+
+    // Receive cursor
+    socket.on('receive-cursor', ({ id: cursorId, name, color, range }) => {
+      if (!quillRef.current) return;
+      
+      const editor = quillRef.current.getEditor();
+      const cursors = editor.getModule('cursors');
+      if (!cursors) return;
+
+      if (!range) {
+        try {
+           cursors.removeCursor(cursorId);
+        } catch (e) {}
+      } else {
+        try {
+            if (!cursors.cursors()[cursorId]) {
+              cursors.createCursor(cursorId, name, color);
+            }
+            cursors.moveCursor(cursorId, range);
+            cursors.toggleFlag(cursorId, true); // Keep the name visible
+        } catch (e) {}
+      }
+    });
+
+    return () => {
+      socket.off('load-document');
+      socket.off('receive-changes');
+      socket.off('receive-cursor');
+    };
+  }, [id]);
+
+  // Helper to sync cursor
+  const syncMyCursor = (selection) => {
+    if (!selection) return;
+    socket.emit('cursor-change', {
+      id: user?._id || socket.id,
+      name: user?.name || 'Anonymous',
+      color: myColor,
+      range: selection,
+    });
   };
 
+  // Send changes
+  const handleChange = (content, delta, source, editor) => {
+    setValue(content);
 
+    if (source !== 'user') return;
+    
+    setSaveStatus('Unsaved modifications...');
+    socket.emit('send-changes', delta);
+    
+    const selection = editor.getSelection();
+    if (selection) syncMyCursor(selection);
+  };
+
+  // Send cursor position
+  const handleSelectionChange = (selection, source, editor) => {
+    if (source !== 'user') return;
+    syncMyCursor(selection);
+  };
+
+  const handleManualSave = () => {
+    if (!loaded || !quillRef.current) return;
+    setSaveStatus('Saving...');
+    const editor = quillRef.current.getEditor();
+    socket.emit('save-document', editor.getContents());
+    setTimeout(() => setSaveStatus('Saved'), 500); // Small delay for UX feeling
+  };
+
+  const handleDownloadPdf = () => {
+    if (!quillRef.current) return;
+    
+    const editorNode = quillRef.current.getEditor().root;
+    
+    // Create a temporary wrapper with Quill's CSS classes so styling is retained
+    const wrapper = document.createElement('div');
+    wrapper.className = 'ql-container ql-snow';
+    wrapper.style.border = 'none';
+    
+    const clone = editorNode.cloneNode(true);
+    // Setting some print-friendly styles
+    clone.style.padding = '0px';
+    clone.style.color = '#000000';
+    clone.style.fontSize = '12pt';
+    
+    wrapper.appendChild(clone);
+
+    const opt = {
+      margin:       0.75, // 0.75 inch margins
+      filename:     `document-${id || 'download'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    
+    html2pdf().from(wrapper).set(opt).save();
+  };
+
+  // Auto save
+  useEffect(() => {
+    if (!loaded) return;
+
+    const interval = setInterval(() => {
+      if (saveStatus !== 'Saved') {
+        const editor = quillRef.current.getEditor();
+        socket.emit('save-document', editor.getContents());
+        setSaveStatus('Saved');
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [loaded, saveStatus]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans">
-      <Sidebar />
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-4">
+          <span className="text-xl font-bold text-blue-600 dark:text-blue-400">Cube Collab Editor</span>
+          <span className={`text-sm font-medium px-2 py-1 rounded ${
+            saveStatus === 'Saved' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+            saveStatus === 'Saving...' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+            'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+          }`}>
+            {saveStatus}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleDownloadPdf}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all flex items-center gap-2"
+            disabled={!loaded}
+            title="Download as PDF"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            PDF
+          </button>
+          
+          <button 
+            onClick={handleManualSave}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all flex items-center gap-2"
+            disabled={!loaded}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save
+          </button>
+        </div>
+      </div>
       
-      <main className="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header className="bg-white dark:bg-gray-900 px-8 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => navigate('/dashboard')}
-              className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-              {isEditing ? 'Edit Document' : 'Create New Document'}
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            {error && <span className="text-red-500 text-sm">{error}</span>}
-            <button 
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              <Save size={18} />
-              {isSaving ? 'Saving...' : 'Save Document'}
-            </button>
-          </div>
-        </header>
-
-        <section className="p-8 max-w-5xl mx-auto w-full flex-1 flex flex-col">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex-1 flex flex-col">
-            <div className="mb-6 flex gap-6 items-start">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Title</label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter a descriptive title..."
-                  className="w-full text-2xl font-bold px-4 py-3 bg-transparent text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:font-normal placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                />
-              </div>
-              <div className="pt-7">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={isPublic}
-                    onChange={(e) => setIsPublic(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-gray-700 bg-transparent focus:ring-blue-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Make Public</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex-1 flex flex-col h-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-white dark-quill">
-              <ReactQuill 
-                theme="snow" 
-                value={content} 
-                onChange={setContent} 
-                modules={quillModules}
-                className="flex-1 h-full flex flex-col document-editor"
-                placeholder="Start writing your document here..."
-              />
-            </div>
-          </div>
-        </section>
-      </main>
+      <div className="flex-1 p-4 md:p-6 pb-20 items-center justify-center overflow-auto flex max-h-[calc(100vh-60px)]">
+         <div className="w-full max-w-5xl h-full bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <ReactQuill
+              ref={quillRef}
+              theme="snow"
+              value={value}
+              onChange={handleChange}
+              onChangeSelection={handleSelectionChange}
+              modules={modules}
+              className="h-[90%] w-full dark:text-white"
+            />
+         </div>
+      </div>
     </div>
   );
 };

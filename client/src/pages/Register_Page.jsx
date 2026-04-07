@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Mail, Lock, User, ArrowRight, AlertCircle, Loader2, Camera } from 'lucide-react';
+import {
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+  Camera,
+} from 'lucide-react';
 
 const Register_Page = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', file: null });
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    file: null,
+  });
   const [preview, setPreview] = useState(null);
-  
+
   const { register, isAuthenticated, isLoading, error, user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -52,7 +65,9 @@ const Register_Page = () => {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">
             Create Account
           </h2>
-          <p className="text-gray-500 dark:text-gray-400">Join Cube Collab today</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Join Cube Collab today
+          </p>
         </div>
 
         {error && (
@@ -68,7 +83,11 @@ const Register_Page = () => {
             <div className="relative group cursor-pointer">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 group-hover:border-blue-500 transition-colors flex items-center justify-center relative shadow-inner">
                 {preview ? (
-                  <img src={preview} alt="Profile preview" className="w-full h-full object-cover" />
+                  <img
+                    src={preview}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <User className="w-10 h-10 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
                 )}
@@ -76,15 +95,17 @@ const Register_Page = () => {
                   <Camera className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <input 
-                type="file" 
+              <input
+                type="file"
                 name="file"
-                accept="image/*" 
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                accept="image/*"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={handleFileChange}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-3 font-medium">Upload profile picture (optional)</p>
+            <p className="text-xs text-gray-500 mt-3 font-medium">
+              Upload profile picture (optional)
+            </p>
           </div>
 
           <div>
@@ -166,7 +187,10 @@ const Register_Page = () => {
 
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
+          <Link
+            to="/login"
+            className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
+          >
             Sign In
           </Link>
         </div>

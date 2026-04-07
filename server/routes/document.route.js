@@ -1,8 +1,13 @@
-import express from "express"
-import authenticateuser from "../middleware/authenticate_user.js"
-import { addDocument, updateDoc, viewDoc } from "../controllers/document.controller.js"
+import express from 'express';
+import authenticateuser from '../middleware/authenticate_user.js';
+import {
+  addDocument,
+  updateDoc,
+  viewDoc,
+  deleteDoc,
+} from '../controllers/document.controller.js';
 
-const documentRouter = express.Router()
+const documentRouter = express.Router();
 
 /**
  * @swagger
@@ -41,7 +46,7 @@ const documentRouter = express.Router()
  *       500:
  *         description: Internal server error
  */
-documentRouter.post("/add", authenticateuser, addDocument)
+documentRouter.post('/add', authenticateuser, addDocument);
 
 /**
  * @swagger
@@ -55,7 +60,7 @@ documentRouter.post("/add", authenticateuser, addDocument)
  *       500:
  *         description: Internal server error
  */
-documentRouter.get("/view", authenticateuser, viewDoc)
+documentRouter.get('/view', authenticateuser, viewDoc);
 
 /**
  * @swagger
@@ -94,7 +99,31 @@ documentRouter.get("/view", authenticateuser, viewDoc)
  *       500:
  *         description: Internal server error
  */
-documentRouter.put("/update/:id", authenticateuser, updateDoc)
+documentRouter.put('/update/:id', authenticateuser, updateDoc);
 
+/**
+ * @swagger
+ * /api/document/delete/{id}:
+ *   delete:
+ *     summary: Delete a document
+ *     tags: [Document]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Document ID
+ *     responses:
+ *       200:
+ *         description: Document deleted successfully
+ *       400:
+ *         description: Bad request (not owner)
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Internal server error
+ */
+documentRouter.delete('/delete/:id', authenticateuser, deleteDoc);
 
-export default documentRouter
+export default documentRouter;

@@ -1,8 +1,11 @@
-import express from "express"
-import { addCollaborator } from "../controllers/collaborator.controller.js"
-import authenticateuser from "../middleware/authenticate_user.js"
+import express from 'express';
+import {
+  addCollaborator,
+  viewCollaborators,
+} from '../controllers/collaborator.controller.js';
+import authenticateuser from '../middleware/authenticate_user.js';
 
-const collaboratorRoute=express.Router()
+const collaboratorRoute = express.Router();
 
 /**
  * @swagger
@@ -54,8 +57,29 @@ const collaboratorRoute=express.Router()
  *       500:
  *         description: Internal server error
  */
-collaboratorRoute.post("/add/:id",authenticateuser,addCollaborator)
+collaboratorRoute.post('/add/:id', authenticateuser, addCollaborator);
 
+/**
+ * @swagger
+ * /api/collaborator/view/{id}:
+ *   get:
+ *     summary: View collaborators of a document
+ *     tags: [Collaborator]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Document ID
+ *     responses:
+ *       200:
+ *         description: Collaborators retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+collaboratorRoute.get('/view/:id', authenticateuser, viewCollaborators);
 
-
-export default collaboratorRoute
+export default collaboratorRoute;

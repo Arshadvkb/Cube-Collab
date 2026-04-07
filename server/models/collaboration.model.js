@@ -1,35 +1,41 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const collaborationSchema = new mongoose.Schema(
   {
     documentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Document",
+      ref: 'Document',
       required: true,
       index: true,
     },
 
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
 
     role: {
       type: String,
-      enum: ["viewer", "editor"],
-      default: "editor",
+      enum: ['viewer', 'editor'],
+      default: 'editor',
     },
 
     invitedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-const collaborationModel = mongoose.models.Collaboration || mongoose.model("Collaboration", collaborationSchema);
+// Optimize query patterns where we look up a user's role in a specific document.
+// The unique constraint also prevents duplicate collaboration entries natively.
+collaborationSchema.index({ documentId: 1, userId: 1 }, { unique: true });
+
+const collaborationModel =
+  mongoose.models.Collaboration ||
+  mongoose.model('Collaboration', collaborationSchema);
 
 export default collaborationModel;

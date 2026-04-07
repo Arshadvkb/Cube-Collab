@@ -1,12 +1,16 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 
-const socket = io("http://localhost:5000");
-socket.on("connect", () => {
-  console.log("Connected:", socket.id);
+const socketUrl = import.meta.env.VITE_API_URL || '';
+const socket = io(socketUrl, {
+  withCredentials: true,
 });
 
-socket.on("connect_error", (err) => {
-  console.log("Connection error:", err.message);
+socket.on('connect', () => {
+  console.log('Connected:', socket.id);
 });
 
-export default socket
+socket.on('connect_error', (err) => {
+  console.log('Connection error:', err.message);
+});
+
+export default socket;

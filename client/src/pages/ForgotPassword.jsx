@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Loader2, ArrowRight, ShieldCheck, Lock, CheckCircle2 } from 'lucide-react';
+import {
+  Mail,
+  Loader2,
+  ArrowRight,
+  ShieldCheck,
+  Lock,
+  CheckCircle2,
+} from 'lucide-react';
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password, 4: Success
@@ -10,8 +17,9 @@ const ForgotPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [resetToken, setResetToken] = useState('');
-  
-  const { sendResetOtp, verifyResetOtp, resetPassword, isLoading, error } = useAuthStore();
+
+  const { sendResetOtp, verifyResetOtp, resetPassword, isLoading, error } =
+    useAuthStore();
   const navigate = useNavigate();
 
   const handleSendOtp = async (e) => {
@@ -46,7 +54,7 @@ const ForgotPassword = () => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      alert('Passwords do not match!');
       return;
     }
     // Note: If the backend needs a "token", we pass `resetToken`.
@@ -64,22 +72,32 @@ const ForgotPassword = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-500/10 mb-6 border border-indigo-200 dark:border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-            {step === 1 && <Mail className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />}
-            {step === 2 && <ShieldCheck className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />}
-            {step === 3 && <Lock className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />}
-            {step === 4 && <CheckCircle2 className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />}
+            {step === 1 && (
+              <Mail className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />
+            )}
+            {step === 2 && (
+              <ShieldCheck className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />
+            )}
+            {step === 3 && (
+              <Lock className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />
+            )}
+            {step === 4 && (
+              <CheckCircle2 className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />
+            )}
           </div>
           <h2 className="text-3xl font-bold bg-linear-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent mb-2">
-            {step === 1 && "Forgot Password"}
-            {step === 2 && "Verify Email"}
-            {step === 3 && "Set New Password"}
-            {step === 4 && "Password Reset"}
+            {step === 1 && 'Forgot Password'}
+            {step === 2 && 'Verify Email'}
+            {step === 3 && 'Set New Password'}
+            {step === 4 && 'Password Reset'}
           </h2>
           <p className="text-slate-600 dark:text-slate-400">
-            {step === 1 && "Enter your email address and we'll send you an OTP to reset your password."}
+            {step === 1 &&
+              "Enter your email address and we'll send you an OTP to reset your password."}
             {step === 2 && `We've sent a 6-digit OTP to ${email}.`}
-            {step === 3 && "Please enter your new password."}
-            {step === 4 && "Your password has been successfully reset. You can now log in."}
+            {step === 3 && 'Please enter your new password.'}
+            {step === 4 &&
+              'Your password has been successfully reset. You can now log in.'}
           </p>
         </div>
 
@@ -93,7 +111,9 @@ const ForgotPassword = () => {
           {step === 1 && (
             <form onSubmit={handleSendOtp} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Email Address
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="h-5 w-5 text-slate-400 dark:text-slate-500" />
@@ -128,7 +148,9 @@ const ForgotPassword = () => {
           {step === 2 && (
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">6-Digit OTP</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  6-Digit OTP
+                </label>
                 <input
                   type="text"
                   required
@@ -167,7 +189,9 @@ const ForgotPassword = () => {
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">New Password</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  New Password
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500" />
@@ -183,7 +207,9 @@ const ForgotPassword = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Confirm New Password</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Confirm New Password
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500" />
@@ -206,7 +232,7 @@ const ForgotPassword = () => {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  "Reset Password"
+                  'Reset Password'
                 )}
               </button>
             </form>
@@ -227,7 +253,10 @@ const ForgotPassword = () => {
         {step === 1 && (
           <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
             Remember your password?{' '}
-            <Link to="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors">
+            <Link
+              to="/login"
+              className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
+            >
               Sign in here
             </Link>
           </p>

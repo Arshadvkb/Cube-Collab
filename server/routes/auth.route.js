@@ -1,15 +1,25 @@
-import express from "express"
+import express from 'express';
 
-import { signup, login, logout, verifyEmail, sendVerificationEmail, sendResetPasswordOtp, matchOtp, resetPassword, checkAuth } from "../controllers/auth.controller.js"
-import { upload } from "../middleware/multer.js";
+import {
+  signup,
+  login,
+  logout,
+  verifyEmail,
+  sendVerificationEmail,
+  sendResetPasswordOtp,
+  matchOtp,
+  resetPassword,
+  checkAuth,
+} from '../controllers/auth.controller.js';
+import { upload } from '../middleware/multer.js';
 
-const authRouter = express.Router()
+const authRouter = express.Router();
 
 /**
  * @swagger
  * tags:
  *   name: Auth
- *   description: Authentication API 
+ *   description: Authentication API
  */
 
 /**
@@ -41,7 +51,7 @@ const authRouter = express.Router()
  *       400:
  *         description: Bad request
  */
-authRouter.post("/signup", upload.single("file"), signup);
+authRouter.post('/signup', upload.single('file'), signup);
 
 /**
  * @swagger
@@ -66,7 +76,7 @@ authRouter.post("/signup", upload.single("file"), signup);
  *       401:
  *         description: Unauthorized
  */
-authRouter.post("/login", login);
+authRouter.post('/login', login);
 
 /**
  * @swagger
@@ -78,7 +88,7 @@ authRouter.post("/login", login);
  *       200:
  *         description: Logout successful
  */
-authRouter.post("/logout", logout);
+authRouter.post('/logout', logout);
 
 /**
  * @swagger
@@ -99,7 +109,7 @@ authRouter.post("/logout", logout);
  *       404:
  *         description: User not found
  */
-authRouter.post("/send-verification-email/:id", sendVerificationEmail);
+authRouter.post('/send-verification-email/:id', sendVerificationEmail);
 
 /**
  * @swagger
@@ -124,9 +134,7 @@ authRouter.post("/send-verification-email/:id", sendVerificationEmail);
  *       400:
  *         description: Invalid or expired token/OTP
  */
-authRouter.post("/verify-email", verifyEmail);
-
-
+authRouter.post('/verify-email', verifyEmail);
 
 /**
  * @swagger
@@ -151,8 +159,7 @@ authRouter.post("/verify-email", verifyEmail);
  *       500:
  *         description: Server error
  */
-authRouter.post("/send-reset-password-otp", sendResetPasswordOtp)
-
+authRouter.post('/send-reset-password-otp', sendResetPasswordOtp);
 
 /**
  * @swagger
@@ -181,8 +188,7 @@ authRouter.post("/send-reset-password-otp", sendResetPasswordOtp)
  *       500:
  *         description: Server error
  */
-authRouter.post("/verify-password-reset-otp", matchOtp)
-
+authRouter.post('/verify-password-reset-otp', matchOtp);
 
 /**
  * @swagger
@@ -209,8 +215,8 @@ authRouter.post("/verify-password-reset-otp", matchOtp)
  *       500:
  *         description: Server error
  */
-authRouter.post("/reset-password", resetPassword)
+authRouter.post('/reset-password', resetPassword);
 
-authRouter.get("/me", checkAuth);
+authRouter.get('/me', checkAuth);
 
-export default authRouter
+export default authRouter;

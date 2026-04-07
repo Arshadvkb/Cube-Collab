@@ -6,7 +6,9 @@ const getInitialTheme = () => {
   if (savedTheme) {
     return savedTheme;
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 };
 
 export const useThemeStore = create((set) => ({
@@ -23,27 +25,27 @@ export const useThemeStore = create((set) => ({
     set((state) => {
       const newTheme = state.theme === 'light' ? 'dark' : 'light';
       localStorage.setItem('theme', newTheme);
-      
+
       if (newTheme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
-      
+
       return { theme: newTheme };
     });
   },
   setTheme: (newTheme) => {
     set(() => {
       localStorage.setItem('theme', newTheme);
-      
+
       if (newTheme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
-      
+
       return { theme: newTheme };
     });
-  }
+  },
 }));

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const documentSchema = new mongoose.Schema(
   {
@@ -11,13 +11,13 @@ const documentSchema = new mongoose.Schema(
     content: {
       type: mongoose.Schema.Types.Mixed,
       default: {
-        ops: [{ insert: "\n" }]
-      }
+        ops: [{ insert: '\n' }],
+      },
     },
 
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -28,15 +28,13 @@ const documentSchema = new mongoose.Schema(
     },
     lastEditedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-
-
-const documentModel = mongoose.models.Document || mongoose.model("Document", documentSchema);
-
+const documentModel =
+  mongoose.models.Document || mongoose.model('Document', documentSchema);
 
 export default documentModel;
