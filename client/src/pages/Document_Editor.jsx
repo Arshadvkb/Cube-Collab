@@ -6,6 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import 'quill-cursors/css';
 import socket from '../lib/socket_client';
 import { useAuthStore } from '../store/useAuthStore';
+import html2pdf from 'html2pdf.js';
 
 // Register the cursors module with Quill safely
 if (Quill && !Quill.imports['modules/cursors']) {
@@ -151,6 +152,36 @@ const Document_Editor = () => {
     setTimeout(() => setSaveStatus('Saved'), 500); // Small delay for UX feeling
   };
 
+  const handleDownloadPdf = () => {
+    if (!quillRef.current) return;
+    
+    const editorNode = quillRef.current.getEditor().root;
+    
+    // Create a temporary wrapper with Quill's CSS classes so styling is retained
+    const wrapper = document.createElement('div');
+    wrapper.className = 'ql-container ql-snow';
+    wrapper.style.border = 'none';
+    
+    const clone = editorNode.cloneNode(true);
+    // Setting some print-friendly styles
+    clone.style.padding = '0px';
+    clone.style.color = '#000000';
+    clone.style.fontSize = '12pt';
+    
+    wrapper.appendChild(clone);
+
+    const opt = {
+      margin:       0.75, // 0.75 inch margins
+      filename:     `document-${id || 'download'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    
+    html2pdf().from(wrapper).set(opt).save();
+  };
+
   // Auto save
   useEffect(() => {
     if (!loaded) return;
@@ -179,19 +210,34 @@ const Document_Editor = () => {
             {saveStatus}
           </span>
         </div>
-        
-        <button 
-          onClick={handleManualSave}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all flex items-center gap-2"
-          disabled={!loaded}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          Save
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleDownloadPdf}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all flex items-center gap-2"
+            disabled={!loaded}
+            title="Download as PDF"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            PDF
+          </button>
+          
+          <button 
+            onClick={handleManualSave}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all flex items-center gap-2"
+            disabled={!loaded}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save
+          </button>
+        </div>
       </div>
       
       <div className="flex-1 p-4 md:p-6 pb-20 items-center justify-center overflow-auto flex max-h-[calc(100vh-60px)]">
