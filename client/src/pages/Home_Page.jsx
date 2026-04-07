@@ -8,57 +8,15 @@ import {
   ArrowRight,
   CheckCircle2,
 } from 'lucide-react';
+import PublicNavbar from '../components/PublicNavbar';
+import PublicFooter from '../components/PublicFooter';
 
 const Home_Page = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 selection:bg-blue-100 dark:selection:bg-blue-900">
-      {/* Navigation */}
-      <nav className="container mx-auto px-6 py-6 flex justify-between items-center sticky top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md z-50 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
-            C
-          </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
-            Cube Collab
-          </span>
-        </div>
-        <div className="hidden md:flex gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
-          <a
-            href="#features"
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            How it Works
-          </a>
-          <a
-            href="#testimonials"
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            Testimonials
-          </a>
-        </div>
-        <div className="flex gap-4">
-          <button
-            onClick={() => navigate('/login')}
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium px-4 py-2 transition-colors"
-          >
-            Log in
-          </button>
-          <button
-            onClick={() => navigate('/register')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium transition-all hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
-          >
-            Sign up
-          </button>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-32 overflow-hidden">
@@ -249,81 +207,7 @@ const Home_Page = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 pt-16 pb-8 text-gray-400">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            <div className="col-span-2">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                  C
-                </div>
-                <span className="text-xl font-bold text-white">
-                  Cube Collab
-                </span>
-              </div>
-              <p className="max-w-sm">
-                Empowering teams to create, organize, and collaborate on
-                knowledge beautifully.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Security
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-            <p>
-              &copy; {new Date().getFullYear()} Cube Collab. All rights
-              reserved.
-            </p>
-            <div className="flex gap-4 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Terms of Service
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };

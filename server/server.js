@@ -5,6 +5,9 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import session from 'express-session';
 import http from 'http';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 
 import swaggerSpec from './utils/swagger.js';
 import connectDb from './config/mongodb.js';
@@ -24,6 +27,20 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
+
+// Security & Optimization Middlewares
+app.use(helmet());
+app.use(compression());
+
+// Global API Rate Limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per `window`
+  standardHeaders: true, 
+  legacyHeaders: false, 
+  message: 'Too many requests from this IP, please try again after 15 minutes.',
+});
+app.use('/api', apiLimiter);
 
 app.use(cookieParser());
 app.use(express.json());

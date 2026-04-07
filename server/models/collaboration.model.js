@@ -30,6 +30,10 @@ const collaborationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Optimize query patterns where we look up a user's role in a specific document.
+// The unique constraint also prevents duplicate collaboration entries natively.
+collaborationSchema.index({ documentId: 1, userId: 1 }, { unique: true });
+
 const collaborationModel =
   mongoose.models.Collaboration ||
   mongoose.model('Collaboration', collaborationSchema);
