@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 import { CheckCircle2, Sparkles } from 'lucide-react';
@@ -8,8 +9,13 @@ const Pricing_Page = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 flex flex-col">
+      <SEO 
+        title="Pricing" 
+        description="Check out Cube Collab's pricing. Currently 100% free while in Beta! Get unlimited workspaces and collaborators today." 
+      />
       <PublicNavbar />
       <main className="flex-1">
+
         <section className="container mx-auto px-6 py-24">
           <div className="text-center max-w-3xl mx-auto mb-20 relative">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-100 dark:bg-green-900/30 dark:border-green-800 text-green-600 dark:text-green-400 text-sm font-semibold mb-6 shadow-sm">

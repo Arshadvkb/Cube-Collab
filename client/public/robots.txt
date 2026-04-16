@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /pricing
+Allow: /contact
+
+# Private areas
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /document/edit/
+Disallow: /document/new
+
+Sitemap: https://cubecollab.com/sitemap.xml

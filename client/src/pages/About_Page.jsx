@@ -1,11 +1,17 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 
 const About_Page = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 flex flex-col">
+      <SEO 
+        title="About Us" 
+        description="Learn about Cube Collab's mission to make collaboration frictionless and information beautiful." 
+      />
       <PublicNavbar />
+
       <main className="flex-1">
         <section className="container mx-auto px-6 py-24">
           <div className="max-w-4xl mx-auto text-center">
