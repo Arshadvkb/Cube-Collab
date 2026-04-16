@@ -6,7 +6,7 @@ let io;
 export const initSocket = async (server) => {
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://127.0.0.1:5173','http://13.48.105.211:5173'],
       credentials: true,
     },
   });
