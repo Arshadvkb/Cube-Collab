@@ -1,14 +1,19 @@
 services:
    client:
      build: ./client
+     env_file:
+         - .env
      container_name: frontend
      restart: always
      
 
    server:
      build: ./server
+     env_file:
+         - .env
      container_name: backend
      restart: always 
+
 
    nginx:
      image: nginx:alpine
