@@ -2,7 +2,7 @@ services:
    client:
      build: ./client
      env_file:
-         - .env
+         - ./client/.env
      container_name: frontend
      restart: always
      
@@ -10,7 +10,7 @@ services:
    server:
      build: ./server
      env_file:
-         - .env
+         - ./server/.env
      container_name: backend
      restart: always 
 
