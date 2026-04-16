@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 import { Layers, FileText, Users, Shield } from 'lucide-react';
@@ -6,7 +7,12 @@ import { Layers, FileText, Users, Shield } from 'lucide-react';
 const Features_Page = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 flex flex-col">
+      <SEO 
+        title="Features" 
+        description="Discover the powerful features of Cube Collab, including real-time collaboration, rich text editing, and enterprise-grade security." 
+      />
       <PublicNavbar />
+
       <main className="flex-1">
         <section className="container mx-auto px-6 py-24">
           <div className="text-center max-w-3xl mx-auto mb-20 relative">

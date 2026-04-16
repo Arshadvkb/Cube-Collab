@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
 import {
   Layers,
@@ -16,7 +17,12 @@ const Home_Page = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-200 selection:bg-blue-100 dark:selection:bg-blue-900">
+      <SEO 
+        title="Home" 
+        description="Collaborate on documents at the speed of thought. The simplest, most powerful way to write, plan, and organize together." 
+      />
       <PublicNavbar />
+
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-32 overflow-hidden">
